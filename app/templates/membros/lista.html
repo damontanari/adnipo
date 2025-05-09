@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Adnipo - Membros{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3>Lista de Membros</h3>
+  {% if usuario_logado and usuario_logado.is_admin %}
+  <a href="{{ url_for('novo_membro') }}" class="btn btn-success">
+    <i class="bi bi-plus-circle"></i> Novo
+  </a>
+  {% endif %}
+</div>
+
+<!-- Exibir Quantidade de Membros -->
+<div class="row mb-4">
+  <div class="col-md-6">
+    <p><strong>Total de Membros:</strong> {{ membros|length }} encontrados</p>
+  </div>
+  <div class="col-md-6 text-end">
+    {% if request.args.get('nome') %}
+    <a href="{{ url_for('listar_membros') }}" class="btn btn-secondary">
+      <i class="bi bi-x-circle"></i> Limpar Filtro
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Barra de Pesquisa -->
+<form method="GET" class="d-flex mb-4">
+  <div class="input-group w-50">
+    <input type="text" class="form-control" name="nome" placeholder="Pesquisar por Nome" value="{{ request.args.get('nome', '') }}">
+    <button class="btn btn-primary" type="submit">
+      <i class="bi bi-search"></i> Pesquisar
+    </button>
+  </div>
+</form>
+
+<!-- Cartões de Estatísticas (exemplo de quantidade por ofício e cidade) -->
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card text-white bg-primary">
+      <div class="card-body">
+        <h5 class="card-title">Membros por Ofício</h5>
+        <ul>
+          {% for oficio, total in membros_por_oficio %}
+          <li>{{ oficio }}: {{ total }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card text-white bg-info">
+      <div class="card-body">
+        <h5 class="card-title">Membros por Cidade</h5>
+        <ul>
+          {% for cidade, total in membros_por_cidade %}
+          <li>{{ cidade }}: {{ total }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabela de Membros -->
+<table class="table table-hover table-striped align-middle">
+  <thead class="table-primary">
+    <tr>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Telefone</th>
+      <th>Ofício</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for membro in membros %}
+    <tr>
+      <td>{{ membro.nome }}</td>
+      <td>{{ membro.email }}</td>
+      <td>{{ membro.telefone }}</td>
+      <td>{{ membro.oficio }}</td>
+      <td>
+        <a href="{{ url_for('editar_membro', membro_id=membro.id) }}" class="btn btn-sm btn-warning">Editar</a>
+        <a href="{{ url_for('excluir_membro', membro_id=membro.id) }}" class="btn btn-sm btn-danger"
+          onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

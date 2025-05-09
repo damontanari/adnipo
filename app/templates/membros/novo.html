@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block title %}Adnipo - Novo Membro{% endblock %}
+
+{% block content %}
+<h2>Novo Membro</h2>
+
+<form method="post" novalidate>
+  <!-- Dados Pessoais -->
+  <h5>Dados Pessoais</h5>
+  <div class="row">
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Nome</label>
+      <input type="text" name="nome" class="form-control" required>
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Endereço</label>
+      <input type="text" name="endereco" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Cidade</label>
+      <input type="text" name="cidade" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">UF</label>
+      <input type="text" name="uf" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">País</label>
+      <input type="text" name="pais" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+        <label class="form-label">CEP</label>
+        <input type="text" name="cep" class="form-control"
+                pattern="^\d{5}-\d{3}$"
+                placeholder="00000-000">
+    </div>
+    <div class="mb-3 col-md-4">
+    <label class="form-label">Telefone</label>
+        <input type="tel" name="telefone" class="form-control"
+                pattern="^\(\d{2}\)\s\d{4,5}-\d{4}$"
+                placeholder="(00) 00000-0000">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">E-mail</label>
+      <input type="email" name="email" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Data de Nascimento</label>
+      <input type="date" name="data_nascimento" class="form-control">
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Naturalidade</label>
+      <input type="text" name="naturalidade" class="form-control">
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Sexo</label>
+      <select name="sexo" class="form-select">
+        <option value="">Selecione</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Feminino">Feminino</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Dados Complementares -->
+  <h5 class="mt-4">Dados Complementares</h5>
+  <div class="row">
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Estado Civil</label>
+      <select name="estado_civil" class="form-select">
+        <option value="">Selecione</option>
+        <option value="Solteiro">Solteiro</option>
+        <option value="Casado">Casado</option>
+        <option value="Viúvo">Viúvo</option>
+        <option value="Divorciado">Divorciado</option>
+      </select>
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Nome do Cônjuge</label>
+      <input type="text" name="nome_conjuge" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Data de Casamento</label>
+      <input type="date" name="data_casamento" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Escolaridade</label>
+      <input type="text" name="escolaridade" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Profissão</label>
+      <input type="text" name="profissao" class="form-control">
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Nome do Pai</label>
+      <input type="text" name="nome_pai" class="form-control">
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Nome da Mãe</label>
+      <input type="text" name="nome_mae" class="form-control">
+    </div>
+  </div>
+
+  <!-- Dados Eclesiásticos -->
+  <h5 class="mt-4">Dados Eclesiásticos</h5>
+  <div class="row">
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Tipo de Membro</label>
+      <select name="membro_tipo" class="form-select">
+        <option value="">Selecione</option>
+        <option value="Membro Comungante">Membro Comungante</option>
+        <option value="Membro Não Comungante">Membro Não Comungante</option>
+        <option value="Não Membro">Não Membro</option>
+      </select>
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Ofício</label>
+      <select name="oficio" class="form-select">
+        <option value="">Selecione</option>
+        <option value="Sem ofício">Sem ofício</option>
+        <option value="Cooperador">Cooperador</option>
+        <option value="Louvor">Louvor</option>
+        <option value="Oficial Obreiro">Oficial Obreiro</option>
+        <option value="Diaconato">Diaconato</option>
+        <option value="Presbiterio">Presbiterio</option>
+        <option value="Pastoreio">Pastoreio</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Batismo -->
+  <h5 class="mt-4">Batismo</h5>
+  <div class="row">
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Data do Batismo</label>
+      <input type="date" name="data_batismo" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Pastor do Batismo</label>
+      <input type="text" name="pastor_batismo" class="form-control">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Igreja do Batismo</label>
+      <input type="text" name="igreja_batismo" class="form-control">
+    </div>
+  </div>
+
+  <!-- Botões -->
+  <div class="mt-4">
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+    <a href="{{ url_for('listar_membros') }}" class="btn btn-secondary ms-2">Voltar</a>
+  </div>
+</form>
+
+{% endblock %}

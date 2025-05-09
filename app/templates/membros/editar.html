@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Adnipo - Editar Membro{% endblock %}
+
+{% block content %}
+<h2>Editar Membro</h2>
+
+<form method="post" novalidate>
+  <!-- Dados Pessoais -->
+  <h5>Dados Pessoais</h5>
+  <div class="row">
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Nome</label>
+      <input type="text" name="nome" class="form-control" value="{{ membro.nome }}" required>
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Endereço</label>
+      <input type="text" name="endereco" class="form-control" value="{{ membro.endereco }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Cidade</label>
+      <input type="text" name="cidade" class="form-control" value="{{ membro.cidade }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">UF</label>
+      <input type="text" name="uf" class="form-control" value="{{ membro.uf }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">País</label>
+      <input type="text" name="pais" class="form-control" value="{{ membro.pais }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">CEP</label>
+      <input type="text" name="cep" class="form-control" value="{{ membro.cep }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Telefone</label>
+      <input type="tel" name="telefone" class="form-control" value="{{ membro.telefone }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">E-mail</label>
+      <input type="email" name="email" class="form-control" value="{{ membro.email }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Data de Nascimento</label>
+      <input type="date" name="data_nascimento" class="form-control" value="{{ membro.data_nascimento }}">
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Naturalidade</label>
+      <input type="text" name="naturalidade" class="form-control" value="{{ membro.naturalidade }}">
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Sexo</label>
+      <select name="sexo" class="form-select">
+        <option value="">Selecione</option>
+        <option value="Masculino" {% if membro.sexo == 'Masculino' %}selected{% endif %}>Masculino</option>
+        <option value="Feminino" {% if membro.sexo == 'Feminino' %}selected{% endif %}>Feminino</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Dados Complementares -->
+  <h5 class="mt-4">Dados Complementares</h5>
+  <div class="row">
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Estado Civil</label>
+      <select name="estado_civil" class="form-select">
+        <option value="">Selecione</option>
+        <option value="Solteiro" {% if membro.estado_civil == 'Solteiro' %}selected{% endif %}>Solteiro</option>
+        <option value="Casado" {% if membro.estado_civil == 'Casado' %}selected{% endif %}>Casado</option>
+        <option value="Viúvo" {% if membro.estado_civil == 'Viúvo' %}selected{% endif %}>Viúvo</option>
+        <option value="Divorciado" {% if membro.estado_civil == 'Divorciado' %}selected{% endif %}>Divorciado</option>
+      </select>
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Nome do Cônjuge</label>
+      <input type="text" name="nome_conjuge" class="form-control" value="{{ membro.nome_conjuge }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Data de Casamento</label>
+      <input type="date" name="data_casamento" class="form-control" value="{{ membro.data_casamento }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Escolaridade</label>
+      <input type="text" name="escolaridade" class="form-control" value="{{ membro.escolaridade }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Profissão</label>
+      <input type="text" name="profissao" class="form-control" value="{{ membro.profissao }}">
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Nome do Pai</label>
+      <input type="text" name="nome_pai" class="form-control" value="{{ membro.nome_pai }}">
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Nome da Mãe</label>
+      <input type="text" name="nome_mae" class="form-control" value="{{ membro.nome_mae }}">
+    </div>
+  </div>
+
+  <!-- Dados Eclesiásticos -->
+  <h5 class="mt-4">Dados Eclesiásticos</h5>
+  <div class="row">
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Tipo de Membro</label>
+      <select name="membro_tipo" class="form-select">
+        <option value="">Selecione</option>
+        <option value="Membro Comungante" {% if membro.membro_tipo == 'Membro Comungante' %}selected{% endif %}>Membro Comungante</option>
+        <option value="Membro Não Comungante" {% if membro.membro_tipo == 'Membro Não Comungante' %}selected{% endif %}>Membro Não Comungante</option>
+        <option value="Não Membro" {% if membro.membro_tipo == 'Não Membro' %}selected{% endif %}>Não Membro</option>
+      </select>
+    </div>
+    <div class="mb-3 col-md-6">
+      <label class="form-label">Ofício</label>
+      <select name="oficio" class="form-select">
+        <option value="">Selecione</option>
+        <option value="Sem ofício" {% if membro.oficio == 'Sem ofício' %}selected{% endif %}>Sem ofício</option>
+        <option value="Cooperador" {% if membro.oficio == 'Cooperador' %}selected{% endif %}>Cooperador</option>
+        <option value="Louvor" {% if membro.oficio == 'Louvor' %}selected{% endif %}>Louvor</option>
+        <option value="Oficial Obreiro" {% if membro.oficio == 'Oficial Obreiro' %}selected{% endif %}>Oficial Obreiro</option>
+        <option value="Diaconato" {% if membro.oficio == 'Diaconato' %}selected{% endif %}>Diaconato</option>
+        <option value="Presbiterio" {% if membro.oficio == 'Presbiterio' %}selected{% endif %}>Presbiterio</option>
+        <option value="Pastoreio" {% if membro.oficio == 'Pastoreio' %}selected{% endif %}>Pastoreio</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Batismo -->
+  <h5 class="mt-4">Batismo</h5>
+  <div class="row">
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Data do Batismo</label>
+      <input type="date" name="data_batismo" class="form-control" value="{{ membro.data_batismo }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Pastor do Batismo</label>
+      <input type="text" name="pastor_batismo" class="form-control" value="{{ membro.pastor_batismo }}">
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label">Igreja do Batismo</label>
+      <input type="text" name="igreja_batismo" class="form-control" value="{{ membro.igreja_batismo }}">
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+    <a href="{{ url_for('listar_membros') }}" class="btn btn-secondary ms-2">Voltar</a>
+  </div>
+</form>
+
+{% endblock %}

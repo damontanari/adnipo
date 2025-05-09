@@ -1,0 +1,50 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+ENV/
+
+# Editor configs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Banco de dados SQLite
+*.sqlite3
+*.db
+
+# Arquivos de ambiente
+.env
+
+# Logs
+*.log
+
+# Arquivos de migração (se usar flask-migrate)
+migrations/
+
+# Arquivos temporários
+*.bak
+*.tmp
+
+# Pasta instance (se usar)
+instance/
+
+# Arquivos de testes
+.coverage
+htmlcov/
+
+# Cache de pacote pip
+pip-wheel-metadata/
+__pycache__/
