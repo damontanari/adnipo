@@ -34,6 +34,27 @@ def admin_requerido(f):
 
 # Função para registrar as rotas
 def configure_routes(app):
+
+    @app.route('/setup_db')
+    def setup_db():
+        # Criando o banco de dados se não existir
+        db.create_all()
+
+        # Verificando se os administradores já existem
+        if not Usuario.query.filter_by(email="daniel@adnipo.com").first():
+            admin_daniel = Usuario(nome="Daniel", email="daniel@adnipo.com", is_admin=True)
+            admin_daniel.set_senha("senha123")  # Definindo senha para o admin Daniel
+            db.session.add(admin_daniel)
+
+        if not Usuario.query.filter_by(email="richard@adnipo.com").first():
+            admin_richard = Usuario(nome="Richard", email="richard@adnipo.com", is_admin=True)
+            admin_richard.set_senha("senha123")  # Definindo senha para o admin Richard
+            db.session.add(admin_richard)
+
+        db.session.commit()
+
+        return "Banco de dados configurado e administradores criados!"
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
