@@ -26,26 +26,27 @@ services:
     build: .
     container_name: flask_app
     environment:
-      - FLASK_APP=app
+      - FLASK_APP=app  # Nome do arquivo Python principal do Flask
       - FLASK_ENV=development
-      - DATABASE_URL=postgresql://postgres:${DB_PASS}@postgres:5432/${DB_NAME}
+      - DATABASE_URL=postgresql://postgres:${DB_PASS}@postgres:5432/${DB_NAME}  # URL de conexão com o banco
     ports:
-      - "5000:5000"
+      - "5000:5000"  # Expõe a aplicação Flask na porta 5000
     depends_on:
-      - postgres
+      - postgres  # O Flask depende do banco de dados
+    command: flask run --host=0.0.0.0  # Comando para rodar o Flask
     restart: unless-stopped
 
   # Serviço do Ngrok
   ngrok:
     image: wernight/ngrok
     container_name: ngrok_tunnel
-    command: http flask_app:5000
+    command: ngrok http flask_app:5000  # O ngrok vai expor a aplicação Flask na porta 5000
     ports:
-      - "4040:4040"  # Dashboard do ngrok estará em localhost:4040
+      - "4040:4040"  # O painel do ngrok estará disponível em localhost:4040
     environment:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}  # Substitua pelo seu token do ngrok
     depends_on:
-      - flask_app
+      - flask_app  # O ngrok depende do serviço Flask
     restart: unless-stopped
 
 volumes:
