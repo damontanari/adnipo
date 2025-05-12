@@ -42,7 +42,7 @@ services:
     container_name: ngrok_tunnel
     command: ngrok http flask_app:5000  # O ngrok vai expor a aplicação Flask na porta 5000
     ports:
-      - "4040:4040"  # O painel do ngrok estará disponível em localhost:4040
+      - "8080:8080"  # O painel do ngrok estará disponível em localhost:4040
     environment:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}  # Substitua pelo seu token do ngrok
     depends_on:
