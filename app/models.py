@@ -53,6 +53,9 @@ class Membro(db.Model):
     # Registro
     data_cadastro = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Nova coluna para a foto
+    foto = db.Column(db.String(120), nullable=True)  # Caminho da foto
+
     def __repr__(self):
         return f"<Membro {self.nome}>"
     

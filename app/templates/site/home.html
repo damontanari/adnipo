@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Bem-vindo à ADNIPO{% endblock %}
+
+{% block content %}
+
+<!-- Banner Hero -->
+<div class="text-white text-center p-5 mb-5 rounded-4 shadow" style="background: url('/static/img/banner.jpg') center/cover no-repeat;">
+  <h1 class="display-3 fw-bold mb-3 text-shadow">Seja bem-vindo à <span style="color: #ffe600;">ADNIPO</span></h1>
+  <p class="lead mb-4">Assembleia de Deus Nipo Brasileira — Uma igreja para toda a família!</p>
+  <a href="#sobre" class="btn btn-warning btn-lg fw-semibold">
+    <i class="bi bi-heart-fill me-2"></i> Conheça nossa Igreja
+  </a>
+</div>
+
+<!-- Sobre a Igreja -->
+<!-- <div id="sobre" class="mb-5">
+  <h2 class="fw-bold mb-3 text-primary">Sobre Nós</h2>
+  <p class="text-muted fs-5">
+    A <strong>ADNIPO</strong> é uma comunidade cristã vibrante e acolhedora, comprometida em viver o evangelho de Jesus Cristo, promovendo fé, amor e transformação de vidas. 
+    Nossa missão é ser um refúgio de esperança e luz para todas as famílias.
+  </p>
+</div> -->
+
+<!-- Missão, Visão e Valores -->
+<div class="row text-center mb-5">
+  <div class="col-md-4 mb-4">
+    <div class="card card-custom p-4 border-0 shadow-sm h-100">
+      <div class="mb-3">
+        <i class="bi bi-send-fill fs-1 text-primary"></i>
+      </div>
+      <h4 class="fw-bold">Missão</h4>
+      <p class="text-muted">Levar a mensagem do evangelho e cuidar das pessoas com amor e compaixão.</p>
+    </div>
+  </div>
+  <div class="col-md-4 mb-4">
+    <div class="card card-custom p-4 border-0 shadow-sm h-100">
+      <div class="mb-3">
+        <i class="bi bi-eye-fill fs-1 text-primary"></i>
+      </div>
+      <h4 class="fw-bold">Visão</h4>
+      <p class="text-muted">Ser referência de fé, esperança e transformação na nossa cidade e região.</p>
+    </div>
+  </div>
+  <div class="col-md-4 mb-4">
+    <div class="card card-custom p-4 border-0 shadow-sm h-100">
+      <div class="mb-3">
+        <i class="bi bi-stars fs-1 text-primary"></i>
+      </div>
+      <h4 class="fw-bold">Valores</h4>
+      <p class="text-muted">Amor, fé, integridade, compromisso e serviço ao próximo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Horários de Culto -->
+<div class="mb-5">
+  <h2 class="fw-bold mb-3 text-primary">Horários de Culto</h2>
+  <ul class="list-group list-group-flush fs-5">
+    <li class="list-group-item"><i class="bi bi-calendar-event-fill text-primary me-2"></i>Domingo - Culto da Família: <strong>19h00</strong></li>
+    <li class="list-group-item"><i class="bi bi-calendar-event-fill text-primary me-2"></i>Terça-feira - Culto de Oração: <strong>20h00</strong></li>
+    <li class="list-group-item"><i class="bi bi-calendar-event-fill text-primary me-2"></i>Quinta-feira - Culto de Ensino: <strong>20h00</strong></li>
+  </ul>
+</div>
+
+<!-- Chamada para Contato -->
+<div class="text-center my-5">
+  <h3 class="fw-bold mb-3">Quer nos fazer uma visita?</h3>
+  <p class="text-muted fs-5 mb-4">Será um prazer receber você e sua família em nossa igreja!</p>
+  <a href="#contato" class="btn btn-primary btn-lg">
+    <i class="bi bi-chat-heart-fill me-2"></i> Entre em Contato
+  </a>
+</div>
+
+<!-- Galeria de Fotos / Depoimentos -->
+<div class="mt-5">
+  <h2 class="fw-bold mb-4 text-primary">Momentos Especiais na ADNIPO</h2>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <img src="{{ url_for('static', filename='img/evento1.jpg') }}" class="img-fluid rounded-3 shadow-sm" alt="Evento 1">
+    </div>
+    <div class="col-md-4">
+      <img src="{{ url_for('static', filename='img/evento2.jpg') }}" class="img-fluid rounded-3 shadow-sm" alt="Evento 2">
+    </div>
+    <div class="col-md-4">
+      <img src="{{ url_for('static', filename='img/evento3.jpg') }}" class="img-fluid rounded-3 shadow-sm" alt="Evento 3">
+    </div>
+  </div>
+  <p class="text-muted mt-3">Participe dos nossos cultos e eventos e faça parte dessa família!</p>
+</div>
+
+<!-- Depoimentos -->
+<div class="mt-5">
+  <h2 class="fw-bold mb-4 text-primary">O que as pessoas dizem</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm p-3">
+        <div class="card-body">
+          <p class="card-text">"Uma igreja acolhedora, onde encontrei amigos e recebi muito amor e cuidado. Recomendo para todas as famílias."</p>
+          <h6 class="fw-bold mt-3">– Ana Santos</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm p-3">
+        <div class="card-body">
+          <p class="card-text">"A ADNIPO mudou minha vida. Os cultos são abençoados e a presença de Deus é real em cada reunião."</p>
+          <h6 class="fw-bold mt-3">– Ricardo Tanaka</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm p-3">
+        <div class="card-body">
+          <p class="card-text">"Lugar maravilhoso para crescer espiritualmente e fazer parte de uma família cristã. Venha nos visitar!"</p>
+          <h6 class="fw-bold mt-3">– Luciana Yamada</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Localização -->
+<div class="mt-5">
+  <h2 class="fw-bold mb-3 text-primary">Como chegar</h2>
+  <div class="ratio ratio-16x9 rounded-3 shadow-sm">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14774.779136420138!2d-49.9543340129805!3d-22.21370264006049!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94bfd73cd6d73233%3A0x5ae7bdcaef990bb2!2sR.%20Araraquara%2C%20353%20-%20Alto%20Cafezal%2C%20Mar%C3%ADlia%20-%20SP%2C%2017504-086!5e0!3m2!1spt-BR!2sbr!4v1747074803812!5m2!1spt-BR!2sbr" 
+    width="400" 
+    height="100" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+</div>
+
+
+<!-- Rodapé -->
+<footer class="mt-5 pt-4 pb-2 text-white text-center rounded-top-4" style="background-color: #1c2331;">
+  <div class="container">
+    <h5 class="fw-bold mb-3">Assembleia de Deus Nipo Brasileira</h5>
+    <p class="mb-2">Cultuando a Deus, cuidando de pessoas, transformando vidas.</p>
+    <div class="mb-3">
+      <a href="#" class="text-white me-3 fs-4"><i class="bi bi-facebook"></i></a>
+      <a href="#" class="text-white me-3 fs-4"><i class="bi bi-instagram"></i></a>
+      <a href="#" class="text-white fs-4"><i class="bi bi-youtube"></i></a>
+    </div>
+    <p class="small">© {{ now.year }} ADNIPO — Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+
+{% endblock %}

@@ -1,9 +1,59 @@
-<!-- app/templates/home.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-  <h2 class="text-center mb-4">Bem-vindo, {{ session['usuario_nome'] }}!</h2>
-  <p class="text-center">Você está logado com sucesso.</p>
-</div>
+    <!-- <h1 class="display-5">Seja bem-vindo, {{ usuario_logado.nome }}!</h1> -->
+
+    <div class="container my-5">
+        <div class="text-center mb-5">
+            <h1>Bem-vindo, {{ usuario_logado.nome }}!</h1>
+            <p class="lead">Este é o Painel Administrativo da Assembleia de Deus Nipo Brasileira - ADNIPO.</p>
+            <hr class="my-4">
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">📋 Gerenciar Membros</h5>
+                        <p class="card-text">Visualize, cadastre, edite e exclua informações de membros da igreja.</p>
+                        <a href="{{ url_for('listar_membros') }}" class="btn btn-primary btn-sm">Acessar</a>
+                    </div>
+                </div>
+            </div>
+
+            {% if usuario_logado.is_admin %}
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">➕ Novo Membro</h5>
+                        <p class="card-text">Adicione novos membros ao cadastro com informações completas.</p>
+                        <a href="{{ url_for('novo_membro') }}" class="btn btn-primary btn-sm">Cadastrar</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">📊 Relatórios e Estatísticas</h5>
+                        <p class="card-text">Veja estatísticas de membros por cidade, ofício e muito mais.</p>
+                        <a href="{{ url_for('listar_membros') }}" class="btn btn-primary btn-sm">Ver Relatórios</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">🚪 Sair</h5>
+                        <p class="card-text">Encerrar sua sessão e retornar para a área pública do site.</p>
+                        <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 {% endblock %}

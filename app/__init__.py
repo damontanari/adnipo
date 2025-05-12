@@ -1,11 +1,13 @@
 import os
 from dotenv import load_dotenv
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+import base64
+from io import BytesIO
+from werkzeug.utils import secure_filename
 
 # Carregar as variáveis do .env
 load_dotenv()
-
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
@@ -17,6 +19,20 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # Usando variável de ambiente
     app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')  # Usando variável de ambiente
+
+    # Configuração para upload de arquivos
+    UPLOAD_FOLDER = 'app/static/uploads'
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+    # Função para verificar se a extensão do arquivo é permitida
+    def allowed_file(filename):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+    # Filtro customizado para codificar imagens em base64
+    @app.template_filter('b64encode')
+    def b64encode_filter(img_io):
+        return base64.b64encode(img_io.getvalue()).decode('utf-8')
 
     # Inicializa o banco de dados
     db.init_app(app)

@@ -20,13 +20,23 @@ def drop_db():
     click.echo("Banco de dados removido!")
 
 @app.cli.command("create_admin")
-@click.argument('email')
-@click.argument('senha')
-@with_appcontext
-def create_admin(email, senha):
-    """Cria um usuário administrador"""
-    admin = Usuario(nome="Admin", email=email, is_admin=True)
-    admin.set_senha(senha)
-    db.session.add(admin)
+@click.argument("nome")
+@click.argument("email")
+@click.argument("senha")
+def create_admin(nome, email, senha):
+    from app import db
+    from app.models import Usuario
+
+    if Usuario.query.filter_by(email=email).first():
+        print("Já existe um usuário com esse email.")
+        return
+
+    novo_admin = Usuario(
+        nome=nome,
+        email=email,
+        is_admin=True
+    )
+    novo_admin.set_senha(senha)
+    db.session.add(novo_admin)
     db.session.commit()
-    click.echo(f"Admin criado: {email}")
+    print(f"Admin {nome} ({email}) criado com sucesso.")
