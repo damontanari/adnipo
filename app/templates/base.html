@@ -58,23 +58,22 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
   <div class="container">
-    <!-- Logo no Navbar -->
-    <a class="navbar-brand" href="{{ url_for('site_home') }}">
-      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="{{ url_for('site_home') }}">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="me-2">
       Adnipo
     </a>
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
         <li class="nav-item">
           {% if 'usuario_id' in session %}
             <a class="nav-link" href="{{ url_for('admin_home') }}">Início</a>
-          <!-- {% else %}
-            <a class="nav-link" href="{{ url_for('site_home') }}">Início</a>
-          {% endif %} -->
+          {% endif %}
         </li>
 
         {% if 'usuario_id' in session %}
@@ -83,9 +82,9 @@
           </li>
 
           {% if usuario_logado and usuario_logado.is_admin %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('novo_membro') }}">Novo</a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('novo_membro') }}">Novo</a>
+            </li>
           {% endif %}
 
           <li class="nav-item">
@@ -96,8 +95,8 @@
           <li class="nav-item">
             <a class="nav-link" href="#contato">Contato</a>
           </li>
-          <li class="nav-item">
-            <a class="btn btn-light btn-sm ms-2" href="{{ url_for('login') }}">
+          <li class="nav-item ms-lg-3">
+            <a class="btn btn-light btn-sm" href="{{ url_for('login') }}">
               <i class="bi bi-box-arrow-in-right"></i> Área Administrativa
             </a>
           </li>
@@ -106,6 +105,7 @@
     </div>
   </div>
 </nav>
+
 
 
 <div class="container container-main">
