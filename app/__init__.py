@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 import base64
 from io import BytesIO
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 # Carregar as variáveis do .env
 load_dotenv()
@@ -33,6 +34,10 @@ def create_app():
     @app.template_filter('b64encode')
     def b64encode_filter(img_io):
         return base64.b64encode(img_io.getvalue()).decode('utf-8')
+    
+    @app.context_processor
+    def inject_now():
+        return {'now': datetime.now}
 
     # Inicializa o banco de dados
     db.init_app(app)
