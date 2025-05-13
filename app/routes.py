@@ -236,9 +236,9 @@ def configure_routes(app):
                 foto.save(os.path.join(app.config['UPLOAD_FOLDER'], foto_filename))
                 membro.foto = foto_filename
 
-            membro.data_nascimento = request.form.get('data_nascimento')
-            membro.data_casamento = request.form.get('data_casamento')
-            membro.data_batismo = request.form.get('data_batismo')
+            membro.data_nascimento = request.form['data_nascimento'] or None
+            membro.data_casamento = request.form['data_casamento'] or None
+            membro.data_batismo = request.form['data_batismo'] or None
 
             db.session.commit()
             flash('Membro atualizado com sucesso!')
