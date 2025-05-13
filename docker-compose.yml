@@ -36,6 +36,16 @@ services:
       - postgres
     restart: unless-stopped
 
+  ngrok:
+    image: wernight/ngrok
+    container_name: ngrok
+    depends_on:
+      - flask_app
+    command: http flask_app:5000
+    ports:
+      - "4040:4040"  # painel web do ngrok
+    restart: unless-stopped
+
 volumes:
   dbinit:
   dbdata:
