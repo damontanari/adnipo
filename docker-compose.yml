@@ -37,9 +37,9 @@ services:
     restart: unless-stopped
 
   ngrok:
-    image: wernight/ngrok
+    image: ngrok/ngrok
     container_name: ngrok
-    command: http flask_app:5000 --authtoken=2o4tLvAOkkr91NNrlQuZ2YTP0Oy_5ewDTpLVDfUbSnE7YUngy
+    command: "http flask_app:5000 --authtoken=2o4tLvAOkkr91NNrlQuZ2YTP0Oy_5ewDTpLVDfUbSnE7YUngy"
     ports:
       - "4040:4040"  # Porta para acessar o dashboard do ngrok
     depends_on:
