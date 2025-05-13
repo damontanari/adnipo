@@ -18,8 +18,6 @@ services:
       - dbinit:/docker-entrypoint-initdb.d
       - dbdata:/var/lib/postgresql/data
     restart: unless-stopped
-    networks:
-      - appnet
 
   flask_app:
     build: .
@@ -37,24 +35,17 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
-    networks:
-      - appnet
 
   ngrok:
     image: wernight/ngrok
     container_name: ngrok
+    command: http flask_app:5000 --authtoken=2o4tLvAOkkr91NNrlQuZ2YTP0Oy_5ewDTpLVDfUbSnE7YUngy
+    ports:
+      - "4040:4040"  # Porta para acessar o dashboard do ngrok
     depends_on:
       - flask_app
-    command: ngrok http flask_app:5000
-    ports:
-      - "4040:4040"  # painel web do ngrok pra ver os acessos, opcional
     restart: unless-stopped
-    networks:
-      - appnet
 
 volumes:
   dbinit:
   dbdata:
-
-networks:
-  appnet:
