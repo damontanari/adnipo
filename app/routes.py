@@ -103,6 +103,7 @@ def configure_routes(app):
         sexo = request.args.get('sexo')
         oficio = request.args.get('oficio')
         query = Membro.query
+        total_membros = query.count()
 
         if nome:
             query = query.filter(Membro.nome.ilike(f'%{nome}%'))
@@ -120,11 +121,12 @@ def configure_routes(app):
         oficios_disponiveis = [o[0] for o in db.session.query(Membro.oficio).distinct().all()]
 
         return render_template('membros/lista.html',
-                               membros=membros,
-                               membros_por_oficio=membros_por_oficio,
-                               membros_por_cidade=membros_por_cidade,
-                               oficios_disponiveis=oficios_disponiveis,
-                               usuario_logado=get_usuario_logado())
+                       membros=membros,
+                       total_membros=total_membros,
+                       membros_por_oficio=membros_por_oficio,
+                       membros_por_cidade=membros_por_cidade,
+                       oficios_disponiveis=oficios_disponiveis,
+                       usuario_logado=get_usuario_logado())
 
     @app.route('/membros/novo', methods=['GET', 'POST'])
     @login_requerido
@@ -275,3 +277,50 @@ def configure_routes(app):
         membros = Membro.query.order_by(Membro.nome).all()
         membros_json = [m.to_dict() for m in membros]
         return jsonify(membros_json)
+    
+    @app.route('/exportar_membros')
+    def exportar_membros():
+        from io import BytesIO
+        import pandas as pd
+        from flask import send_file
+
+        membros = Membro.query.all()
+
+        data = [{
+            'ID': m.id,
+            'Nome': m.nome,
+            'Endereço': m.endereco,
+            'Cidade': m.cidade,
+            'UF': m.uf,
+            'País': m.pais,
+            'CEP': m.cep,
+            'Telefone': m.telefone,
+            'Email': m.email,
+            'Data de Nascimento': m.data_nascimento.strftime('%d/%m/%Y') if m.data_nascimento else '',
+            'Naturalidade': m.naturalidade,
+            'Sexo': m.sexo,
+            'Estado Civil': m.estado_civil,
+            'Nome do Cônjuge': m.nome_conjuge,
+            'Data de Casamento': m.data_casamento.strftime('%d/%m/%Y') if m.data_casamento else '',
+            'Data de Batismo': m.data_batismo.strftime('%d/%m/%Y') if m.data_batismo else '',
+            'Escolaridade': m.escolaridade,
+            'Profissão': m.profissao,
+            'Nome do Pai': m.nome_pai,
+            'Nome da Mãe': m.nome_mae,
+            'Tipo de Membro': m.membro_tipo,
+            'Ofício': m.oficio,
+            'Pastor do Batismo': m.pastor_batismo,
+            'Igreja do Batismo': m.igreja_batismo,
+            'Foto': m.foto,
+            'Data de Cadastro': m.data_cadastro.strftime('%d/%m/%Y %H:%M')
+        } for m in membros]
+
+        df = pd.DataFrame(data)
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Membros')
+
+        output.seek(0)
+        return send_file(output, download_name='membros_completo.xlsx', as_attachment=True)
+
+
