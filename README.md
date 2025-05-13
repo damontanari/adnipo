@@ -95,3 +95,10 @@ drop-db:
 
 create-admin:
 	flask create_admin admin@admin.com 123456
+
+--
+
+## 📦 Utilizando os comandos com docker
+docker compose up -d --build
+docker compose exec flask_app flask create_db
+docker compose exec flask_app flask create_admin "Admin" "admin@email.com" "senha123"
