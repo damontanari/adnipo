@@ -1,54 +1,37 @@
 version: '3.9'
 
 services:
-
-  # Serviço do banco de dados
+  # Banco de dados Postgres
   postgres:
     container_name: postgres
-    hostname: postgres
-    image: postgres
+    image: postgres:16
     env_file:
       - .env
     environment:
-      DATABASE_HOST: ${DB_HOST}
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - dbinit:/docker-entrypoint-initdb.d
       - dbdata:/var/lib/postgresql/data
     restart: unless-stopped
 
-  # Serviço da aplicação Flask
+  # Aplicação Flask
   flask_app:
     build: .
     container_name: flask_app
+    env_file:
+      - .env
     environment:
-      - FLASK_APP=app  # Nome do arquivo Python principal do Flask
-      - FLASK_ENV=development
-      - DATABASE_URL=postgresql://postgres:${DB_PASS}@postgres:5432/${DB_NAME}  # URL de conexão com o banco
+      FLASK_APP: manage.py
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASS}@postgres:5432/${DB_NAME}
     ports:
-      - "5000:5000"  # Expõe a aplicação Flask na porta 5000
+      - "5000:5000"
     depends_on:
-      - postgres  # O Flask depende do banco de dados
-    command: flask run --host=0.0.0.0  # Comando para rodar o Flask
-    restart: unless-stopped
-
-  # Serviço do Ngrok
-  ngrok:
-    image: wernight/ngrok
-    container_name: ngrok_tunnel
-    command: ngrok http flask_app:5000  # O ngrok vai expor a aplicação Flask na porta 5000
-    ports:
-      - "8080:8080"  # O painel do ngrok estará disponível em localhost:4040
-    environment:
-      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}  # Substitua pelo seu token do ngrok
-    depends_on:
-      - flask_app  # O ngrok depende do serviço Flask
+      - postgres
     restart: unless-stopped
 
 volumes:
-  dbinit:
   dbdata:
