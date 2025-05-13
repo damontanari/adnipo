@@ -1,25 +1,19 @@
-# Usa uma imagem base do Python
 FROM python:3.11-slim
 
-# Define o diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copia os arquivos de requirements e instala as dependências
+# Copia os arquivos necessários
 COPY requirements.txt .
+
+# Instala as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante do projeto para o container
+# Copia todo o restante do código da aplicação
 COPY . .
 
-# Torna o entrypoint executável
+# Copia o entrypoint.sh e dá permissão de execução
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-# Expõe a porta 5000
-EXPOSE 5000
-
-# Define a variável de ambiente padrão para o Flask
-ENV FLASK_APP=manage.py
-ENV FLASK_ENV=development
 
 # Define o entrypoint do container
 ENTRYPOINT ["/entrypoint.sh"]

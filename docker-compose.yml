@@ -1,32 +1,34 @@
 version: '3.9'
 
 services:
-  # Banco de dados Postgres
+
+  # Serviço do banco de dados
   postgres:
     container_name: postgres
-    image: postgres:16
+    hostname: postgres
+    image: postgres
     env_file:
       - .env
     environment:
+      DATABASE_HOST: ${DB_HOST}
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
     ports:
       - "${DB_PORT}:5432"
     volumes:
+      - dbinit:/docker-entrypoint-initdb.d
       - dbdata:/var/lib/postgresql/data
     restart: unless-stopped
 
-  # Aplicação Flask
+  # Serviço da aplicação Flask
   flask_app:
     build: .
     container_name: flask_app
-    env_file:
-      - .env
     environment:
-      FLASK_APP: manage.py
-      FLASK_ENV: development
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASS}@postgres:5432/${DB_NAME}
+      - FLASK_APP=app
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://postgres:${DB_PASS}@postgres:5432/${DB_NAME}
     ports:
       - "5000:5000"
     depends_on:
@@ -34,4 +36,5 @@ services:
     restart: unless-stopped
 
 volumes:
+  dbinit:
   dbdata:
