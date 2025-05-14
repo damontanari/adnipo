@@ -283,7 +283,7 @@ def configure_routes(app):
     @login_requerido
     def carteirinha_membro(membro_id):
         membro = Membro.query.get_or_404(membro_id)
-        data_para_qr = f"https://www.seusite.com/membro/{membro.id}"
+        data_para_qr = f"https://7e75-189-113-26-36.ngrok-free.app/membro/{membro.id}"
 
         qr = qrcode.make(data_para_qr)
         img_io = BytesIO()
