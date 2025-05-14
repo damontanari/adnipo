@@ -2,6 +2,14 @@
 {% block title %}Carteirinha de {{ membro.nome }}{% endblock %}
 
 {% block content %}
+
+<!-- Botões -->
+<div class="text-end mt-4">
+  <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary ms-2">
+    <i class="bi bi-arrow-left-circle"></i> Voltar
+  </a>
+</div>
+
 <div class="card mx-auto mt-5" style="max-width: 350px; border-radius: 15px;">
   <div class="card-header text-center bg-adnipo text-white">
     <h4>ADNIPO</h4>
@@ -26,4 +34,6 @@
     <small class="text-muted">Emitido em {{ membro.data_cadastro.strftime('%d/%m/%Y') }}</small>
   </div>
 </div>
+
+
 {% endblock %}
