@@ -129,6 +129,7 @@
             {% endif %}
 
             <!-- Menu de perfil -->
+            {% if usuario_logado %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="avatar-circle me-2">
@@ -141,6 +142,7 @@
                 <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i> Sair</a></li>
               </ul>
             </li>
+            {% endif %}
 
           {% else %}
             <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>

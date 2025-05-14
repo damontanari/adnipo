@@ -14,7 +14,7 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__, template_folder='templates')
 
-    # Configurações do aplicativo usando variáveis de ambiente
+    # Configurações...
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -22,14 +22,25 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = 'app/static/uploads'
     app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
-    # Filtro customizado para codificar imagens em base64
+    # Filtro customizado para base64
     @app.template_filter('b64encode')
     def b64encode_filter(img_io):
         return base64.b64encode(img_io.getvalue()).decode('utf-8')
 
+    # Context processor para data/hora atual
     @app.context_processor
     def inject_now():
         return {'now': datetime.now}
+
+    # Context processor para usuário logado
+    @app.context_processor
+    def inject_usuario_logado():
+        from flask import session
+        from app.models import Usuario  # ou o caminho certo pro seu model
+        usuario = None
+        if 'usuario_id' in session:
+            usuario = Usuario.query.get(session['usuario_id'])
+        return {'usuario_logado': usuario}
 
     # Inicializa o banco de dados
     db.init_app(app)
@@ -39,3 +50,4 @@ def create_app():
     configure_routes(app)
 
     return app
+
