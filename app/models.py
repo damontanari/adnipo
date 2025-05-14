@@ -10,6 +10,10 @@ class Usuario(db.Model):
     senha_hash = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+    # Relacionamento opcional com um membro
+    membro_id = db.Column(db.Integer, db.ForeignKey('membro.id'), nullable=True)
+    membro = relationship('Membro', backref='usuario_vinculado', uselist=False)
+
     def set_senha(self, senha):
         self.senha_hash = generate_password_hash(senha)
 
@@ -60,9 +64,7 @@ class Membro(db.Model):
     usuario = relationship('Usuario', backref='membros_cadastrados')
 
     # Nova coluna para a foto
-    foto = db.Column(db.String(120), nullable=True)  # Caminho da foto
+    foto = db.Column(db.String(120), nullable=True)
 
     def __repr__(self):
         return f"<Membro {self.nome}>"
-    
-

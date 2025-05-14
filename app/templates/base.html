@@ -122,60 +122,61 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto align-items-lg-center">
           {% if 'usuario_id' in session %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('admin_home') }}">
-                <i class="bi bi-house-door me-1"></i> Início
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('listar_membros') }}">
-                <i class="bi bi-people me-1"></i> Membros
-              </a>
-            </li>
-            {% if usuario_logado and usuario_logado.is_admin %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('novo_membro') }}">
-                <i class="bi bi-person-plus me-1"></i> Novo
-              </a>
-            </li>
-            {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('admin_home') }}">
+              <i class="bi bi-house-door me-1"></i> Início
+            </a>
+          </li>
 
-            <!-- Menu de perfil -->
-            {% if usuario_logado %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="avatar-circle me-2">
-                  {{ usuario_logado.nome[:2] }}
-                </div>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
-                <li>
-                  <a class="dropdown-item" href="{{ url_for('perfil') }}">
-                    <i class="bi bi-person-circle me-2"></i> Meu Perfil
-                  </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <a class="dropdown-item" href="{{ url_for('logout') }}">
-                    <i class="bi bi-box-arrow-right me-2"></i> Sair
-                  </a>
-                </li>
-              </ul>
-            </li>
-            {% endif %}
-
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="#contato">
-                <i class="bi bi-envelope me-1"></i> Contato
-              </a>
-            </li>
-            <li class="nav-item ms-lg-3">
-              <a class="btn btn-light btn-sm" href="{{ url_for('login') }}">
-                <i class="bi bi-box-arrow-in-right"></i> Área Administrativa
-              </a>
-            </li>
+          {% if usuario_logado and usuario_logado.is_admin %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('listar_membros') }}">
+              <i class="bi bi-people me-1"></i> Membros
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('novo_membro') }}">
+              <i class="bi bi-person-plus me-1"></i> Novo
+            </a>
+          </li>
           {% endif %}
+
+          <!-- Menu de perfil -->
+          {% if usuario_logado %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="avatar-circle me-2">
+                {{ usuario_logado.nome[:2] }}
+              </div>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
+              <li>
+                <a class="dropdown-item" href="{{ url_for('perfil') }}">
+                  <i class="bi bi-person-circle me-2"></i> Meu Perfil
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" href="{{ url_for('logout') }}">
+                  <i class="bi bi-box-arrow-right me-2"></i> Sair
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="#contato">
+              <i class="bi bi-envelope me-1"></i> Contato
+            </a>
+          </li>
+          <li class="nav-item ms-lg-3">
+            <a class="btn btn-light btn-sm" href="{{ url_for('login') }}">
+              <i class="bi bi-box-arrow-in-right"></i> Área Administrativa
+            </a>
+          </li>
+        {% endif %}
         </ul>
       </div>
     </div>

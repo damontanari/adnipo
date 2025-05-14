@@ -6,6 +6,7 @@ from datetime import datetime
 from functools import wraps
 import qrcode
 from io import BytesIO
+import base64
 import os
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -136,6 +137,7 @@ def configure_routes(app):
 
     @app.route('/membros')
     @login_requerido
+    @admin_requerido
     def listar_membros():
         # Pega parâmetros da URL
         nome = request.args.get('nome')
@@ -326,11 +328,16 @@ def configure_routes(app):
         membro = Membro.query.get_or_404(membro_id)
         data_para_qr = f"https://7e75-189-113-26-36.ngrok-free.app/membro/{membro.id}"
 
+        # Gerar o QR code
         qr = qrcode.make(data_para_qr)
         img_io = BytesIO()
         qr.save(img_io, 'PNG')
         img_io.seek(0)
-        return render_template('membros/carteirinha.html', membro=membro, qr_code=img_io)
+
+        # Converter imagem para base64
+        qr_base64 = base64.b64encode(img_io.getvalue()).decode()
+
+        return render_template('membros/carteirinha.html', membro=membro, qr_code=qr_base64)
 
 
     # 👉 API JSON de membros ordenada por nome
@@ -342,6 +349,8 @@ def configure_routes(app):
     
 
     @app.route('/exportar_membros')
+    @login_requerido
+    @admin_requerido
     def exportar_membros():
         from io import BytesIO
         import pandas as pd

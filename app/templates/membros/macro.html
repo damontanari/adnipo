@@ -1,0 +1,13 @@
+{% macro dashboard_card(titulo, descricao, icone_classe, url, cor_btn='btn-adnipo', texto_btn='Acessar') %}
+<div class="col-md-6 mb-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <h5 class="card-title">
+        <i class="{{ icone_classe }} me-2"></i>{{ titulo }}
+      </h5>
+      <p class="card-text">{{ descricao }}</p>
+      <a href="{{ url }}" class="btn {{ cor_btn }} btn-sm">{{ texto_btn }}</a>
+    </div>
+  </div>
+</div>
+{% endmacro %}

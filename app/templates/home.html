@@ -11,47 +11,61 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">📋 Gerenciar Membros</h5>
-                        <p class="card-text">Visualize, cadastre, edite e exclua informações de membros da igreja.</p>
-                        <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Acessar</a>
-                    </div>
-                </div>
-            </div>
-
             {% if usuario_logado.is_admin %}
             <div class="col-md-6 mb-4">
                 <div class="card shadow-sm border-0">
                     <div class="card-body">
-                        <h5 class="card-title">➕ Novo Membro</h5>
-                        <p class="card-text">Adicione novos membros ao cadastro com informações completas.</p>
-                        <a href="{{ url_for('novo_membro') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
+                    <h5 class="card-title">📋 Gerenciar Membros</h5>
+                    <p class="card-text">Visualize, cadastre, edite e exclua informações de membros da igreja.</p>
+                    <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Acessar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                    <h5 class="card-title">📊 Relatórios e Estatísticas</h5>
+                    <p class="card-text">Veja estatísticas de membros por cidade, ofício e muito mais.</p>
+                    <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Ver Relatórios</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                    <h5 class="card-title">➕ Novo Membro</h5>
+                    <p class="card-text">Adicione novos membros ao cadastro com informações completas.</p>
+                    <a href="{{ url_for('novo_membro') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
                     </div>
                 </div>
             </div>
             {% endif %}
 
+            {% if not usuario_logado.is_admin and usuario_logado.membro %}
             <div class="col-md-6 mb-4">
                 <div class="card shadow-sm border-0">
                     <div class="card-body">
-                        <h5 class="card-title">📊 Relatórios e Estatísticas</h5>
-                        <p class="card-text">Veja estatísticas de membros por cidade, ofício e muito mais.</p>
-                        <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Ver Relatórios</a>
+                        <h5 class="card-title">🪪 Minha Carteirinha</h5>
+                        <p class="card-text">Visualize sua carteirinha digital com QR Code.</p>
+                        <a href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro.id) }}" class="btn btn-adnipo btn-sm">Ver Carteirinha</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                    <h5 class="card-title">🚪 Sair</h5>
+                    <p class="card-text">Encerrar sua sessão e retornar para a área pública do site.</p>
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">🚪 Sair</h5>
-                        <p class="card-text">Encerrar sua sessão e retornar para a área pública do site.</p>
-                        <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
-                    </div>
-                </div>
-            </div>
+
 
         </div>
     </div>
