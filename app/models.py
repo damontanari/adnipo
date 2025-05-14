@@ -12,7 +12,12 @@ class Usuario(db.Model):
 
     # Relacionamento opcional com um membro
     membro_id = db.Column(db.Integer, db.ForeignKey('membro.id'), nullable=True)
-    membro = relationship('Membro', backref='usuario_vinculado', uselist=False)
+    membro = relationship(
+        'Membro',
+        backref='usuario_vinculado',
+        uselist=False,
+        foreign_keys='Usuario.membro_id'
+    )
 
     def set_senha(self, senha):
         self.senha_hash = generate_password_hash(senha)
@@ -61,7 +66,11 @@ class Membro(db.Model):
 
     # Relacionamento com o usuário que cadastrou
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    usuario = relationship('Usuario', backref='membros_cadastrados')
+    usuario = relationship(
+        'Usuario',
+        backref='membros_cadastrados',
+        foreign_keys='Membro.usuario_id'
+    )
 
     # Nova coluna para a foto
     foto = db.Column(db.String(120), nullable=True)
