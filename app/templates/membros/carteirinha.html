@@ -13,7 +13,13 @@
     <p class="text-muted">{{ membro.oficio }}</p>
     <p><strong>Telefone:</strong> {{ membro.telefone }}</p>
     <p><strong>Email:</strong> {{ membro.email }}</p>
-    <p><strong>Data Batismo:</strong> {{ membro.data_batismo.strftime('%d/%m/%Y') }}</p>
+    <p><strong>Data Batismo:</strong> 
+      {% if membro.data_batismo %}
+      {{ membro.data_batismo.strftime('%d/%m/%Y') }}
+      {% else %}
+        Não batizado
+      {% endif %}
+    </p>
     <hr>
     <img src="data:image/png;base64,{{ qr_code | b64encode }}" alt="QR Code" class="mb-3" style="width: 120px; height: 120px;">
     <hr>
