@@ -8,6 +8,8 @@ import qrcode
 from io import BytesIO
 import os
 from werkzeug.utils import secure_filename
+from app.utils import allowed_file
+
 
 # Função para recuperar o usuário logado
 def get_usuario_logado():

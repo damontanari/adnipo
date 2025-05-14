@@ -20,11 +20,10 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # Usando variável de ambiente
     app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')  # Usando variável de ambiente
+    app.config['UPLOAD_FOLDER'] = 'app/static/uploads'
 
     # Configuração para upload de arquivos
-    UPLOAD_FOLDER = 'app/static/uploads'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
     # Função para verificar se a extensão do arquivo é permitida
     def allowed_file(filename):
