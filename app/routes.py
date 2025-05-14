@@ -119,7 +119,7 @@ def configure_routes(app):
         nova_senha = request.form['nova_senha']
         confirmar_senha = request.form['confirmar_senha']
 
-        if not check_password_hash(usuario.senha, senha_atual):
+        if not check_password_hash(usuario.senha_hash, senha_atual):
             flash('Senha atual incorreta.', 'danger')
             return redirect(url_for('perfil'))
 
@@ -127,7 +127,7 @@ def configure_routes(app):
             flash('As novas senhas não coincidem.', 'danger')
             return redirect(url_for('perfil'))
 
-        usuario.senha = generate_password_hash(nova_senha)
+        usuario.senha_hash = generate_password_hash(nova_senha)
         db.session.commit()
 
         flash('Senha atualizada com sucesso!', 'success')
