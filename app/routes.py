@@ -98,13 +98,17 @@ def configure_routes(app):
     @app.route('/membros')
     @login_requerido
     def listar_membros():
+        # Pega parâmetros da URL
         nome = request.args.get('nome')
         cidade = request.args.get('cidade')
         sexo = request.args.get('sexo')
         oficio = request.args.get('oficio')
-        query = Membro.query
-        total_membros = query.count()
+        status_membro = request.args.get('status_membro')
 
+        # Monta query base
+        query = Membro.query
+
+        # Aplica filtros se existirem
         if nome:
             query = query.filter(Membro.nome.ilike(f'%{nome}%'))
         if cidade:
@@ -113,20 +117,33 @@ def configure_routes(app):
             query = query.filter(Membro.sexo == sexo)
         if oficio:
             query = query.filter(Membro.oficio.ilike(f'%{oficio}%'))
+        if status_membro:
+            query = query.filter(Membro.membro_tipo == status_membro)
 
+        # Total de membros filtrados
+        total_membros = query.count()
+
+        # Resultado da busca
         membros = query.all()
 
-        membros_por_oficio = db.session.query(Membro.oficio, db.func.count(Membro.id).label('total')).group_by(Membro.oficio).all()
-        membros_por_cidade = db.session.query(Membro.cidade, db.func.count(Membro.id).label('total')).group_by(Membro.cidade).all()
+        # Dashboards de estatísticas
+        membros_por_oficio = db.session.query(Membro.oficio, db.func.count(Membro.id)).group_by(Membro.oficio).all()
+        membros_por_cidade = db.session.query(Membro.cidade, db.func.count(Membro.id)).group_by(Membro.cidade).all()
+        membros_por_status = db.session.query(Membro.membro_tipo, db.func.count(Membro.id)).group_by(Membro.membro_tipo).all()
+
+        # Ofícios disponíveis para o select de filtro
         oficios_disponiveis = [o[0] for o in db.session.query(Membro.oficio).distinct().all()]
 
         return render_template('membros/lista.html',
-                       membros=membros,
-                       total_membros=total_membros,
-                       membros_por_oficio=membros_por_oficio,
-                       membros_por_cidade=membros_por_cidade,
-                       oficios_disponiveis=oficios_disponiveis,
-                       usuario_logado=get_usuario_logado())
+                            membros=membros,
+                            total_membros=total_membros,
+                            membros_por_oficio=membros_por_oficio,
+                            membros_por_cidade=membros_por_cidade,
+                            membros_por_status=membros_por_status,
+                            oficios_disponiveis=oficios_disponiveis,
+                            usuario_logado=get_usuario_logado())
+
+
 
     @app.route('/membros/novo', methods=['GET', 'POST'])
     @login_requerido
@@ -136,6 +153,7 @@ def configure_routes(app):
             # dados do formulário
             nome = request.form.get('nome')
             endereco = request.form.get('endereco')
+            numero = request.form.get('numero')
             cidade = request.form.get('cidade')
             uf = request.form.get('uf')
             pais = request.form.get('pais')
@@ -171,6 +189,7 @@ def configure_routes(app):
             novo_membro = Membro(
                 nome=nome,
                 endereco=endereco,
+                numero=numero,
                 cidade=cidade,
                 uf=uf,
                 pais=pais,
@@ -193,7 +212,8 @@ def configure_routes(app):
                 pastor_batismo=pastor_batismo,
                 igreja_batismo=igreja_batismo,
                 foto=foto_filename,
-                data_cadastro=datetime.utcnow()
+                data_cadastro=datetime.utcnow(),
+                usuario_id=session.get('usuario_id')  # aqui pega o usuário logado
             )
 
             db.session.add(novo_membro)
@@ -213,6 +233,7 @@ def configure_routes(app):
         if request.method == 'POST':
             membro.nome = request.form.get('nome')
             membro.endereco = request.form.get('endereco')
+            membro.numero = request.form.get('numero')
             membro.cidade = request.form.get('cidade')
             membro.uf = request.form.get('uf')
             membro.pais = request.form.get('pais')

@@ -34,8 +34,16 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="col-md-4">
+                        <select name="status_membro" class="form-select">
+                            <option value="">Status Membro</option>
+                            <option value="Visitante" {% if request.args.get('status_membro') == 'Visitante' %}selected{% endif %}>Visitante</option>
+                            <option value="Membro" {% if request.args.get('status_membro') == 'Membro' %}selected{% endif %}>Membro</option>
+                            <option value="Não Membro" {% if request.args.get('status_membro') == 'Não Membro' %}selected{% endif %}>Não Membro</option>
+                        </select>
+                    </div>
                     <div class="col-md-2 d-grid">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-adnipo">
                             <i class="fas fa-search"></i> Buscar
                         </button>
                     </div>
@@ -51,8 +59,9 @@
 
     <!-- Total de registros -->
     <div class="mb-3">
-        <span class="badge bg-primary fs-6">Total de membros: {{ total_membros }}</span>
+        <span class="badge bg-adnipo fs-6">Total de membros: {{ total_membros }}</span>
     </div>
+
 
     <!-- Tabela -->
     <div class="card shadow-sm">
@@ -152,7 +161,7 @@
                         {% for oficio, total in membros_por_oficio %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             {{ oficio }}
-                            <span class="badge bg-primary rounded-pill">{{ total }}</span>
+                            <span class="badge bg-adnipo rounded-pill">{{ total }}</span>
                         </li>
                         {% endfor %}
                     </ul>
@@ -170,13 +179,33 @@
                         {% for cidade, total in membros_por_cidade %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             {{ cidade }}
-                            <span class="badge bg-success rounded-pill">{{ total }}</span>
+                            <span class="badge bg-adnipo rounded-pill">{{ total }}</span>
                         </li>
                         {% endfor %}
                     </ul>
                 </div>
             </div>
         </div>
+
+        <div class="col-md-6">
+            <div class="card text-bg-light shadow-sm">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-users me-2"></i> Por Status
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for status, total in membros_por_status %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ status }}
+                            <span class="badge bg-adnipo rounded-pill">{{ total }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
 </div>

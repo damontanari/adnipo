@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import relationship
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +23,7 @@ class Membro(db.Model):
     # Dados Pessoais
     nome = db.Column(db.String(150), nullable=False)
     endereco = db.Column(db.String(200))
+    numero = db.Column(db.String(20))
     cidade = db.Column(db.String(100))
     uf = db.Column(db.String(100))
     pais = db.Column(db.String(100))
@@ -43,7 +45,7 @@ class Membro(db.Model):
 
     # Dados Eclesiásticos
     membro_tipo = db.Column(db.String(30))  # Membro, Visitante, Não Membro
-    oficio = db.Column(db.String(50))       # Pastoreio, Presbiterio, Diaconato, Oficial obreiro, Musico, Cooperador...
+    oficio = db.Column(db.String(50))       # Pastoreio, Presbiterio, Diaconato, Líderes, Musico, Cooperador...
 
     # Batismo
     data_batismo = db.Column(db.Date)
@@ -52,6 +54,10 @@ class Membro(db.Model):
 
     # Registro
     data_cadastro = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relacionamento com o usuário que cadastrou
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    usuario = relationship('Usuario', backref='membros_cadastrados')
 
     # Nova coluna para a foto
     foto = db.Column(db.String(120), nullable=True)  # Caminho da foto
