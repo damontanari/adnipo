@@ -21,7 +21,7 @@
       {% endif %}
     </p>
     <hr>
-    <img src="data:image/png;base64,{{ qr_code | b64encode }}" alt="QR Code" class="mb-3" style="width: 120px; height: 120px;">
+    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="mb-3" style="width: 120px; height: 120px;">
     <hr>
     <small class="text-muted">Emitido em {{ membro.data_cadastro.strftime('%d/%m/%Y') }}</small>
   </div>

@@ -158,15 +158,14 @@
 
               <li><hr class="dropdown-divider"></li>
           
-              {% if usuario_logado.membro_id %}
+              {% if not usuario_logado.is_admin and usuario_logado.membro_id %}
               <li>
                 <a class="dropdown-item" href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro_id) }}">
                   <i class="bi bi-credit-card me-2"></i> Minha Carteirinha
                 </a>
               </li>
               {% endif %}
-
-
+              
               <li><hr class="dropdown-divider"></li>
               <li>
                 <a class="dropdown-item" href="{{ url_for('logout') }}">
