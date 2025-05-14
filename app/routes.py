@@ -227,6 +227,7 @@ def configure_routes(app):
             data_casamento  = parse_date(request.form.get('data_casamento'))
             data_batismo    = parse_date(request.form.get('data_batismo'))
 
+            # Cria o novo membro
             novo_membro = Membro(
                 nome=nome,
                 endereco=endereco,
@@ -254,14 +255,27 @@ def configure_routes(app):
                 igreja_batismo=igreja_batismo,
                 foto=foto_filename,
                 data_cadastro=datetime.utcnow(),
-                usuario_id=session.get('usuario_id')  # aqui pega o usuário logado
+                usuario_id=session.get('usuario_id')
             )
 
             db.session.add(novo_membro)
+            db.session.commit()  # precisa antes para pegar novo_membro.id
+
+            # Cria usuário vinculado ao membro
+            novo_usuario = Usuario(
+                nome=novo_membro.nome,
+                email=novo_membro.email,
+                is_admin=False,
+                membro_id=novo_membro.id
+            )
+            novo_usuario.set_senha('adnipo')  # senha padrão
+
+            db.session.add(novo_usuario)
             db.session.commit()
 
-            flash('Membro cadastrado com sucesso!')
+            flash(f'Membro {novo_membro.nome} cadastrado e usuário criado com senha padrão.', 'success')
             return redirect(url_for('listar_membros'))
+
         return render_template('membros/novo.html')
 
 
