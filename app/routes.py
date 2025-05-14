@@ -8,6 +8,7 @@ import qrcode
 from io import BytesIO
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 from app.utils import allowed_file
 
 
@@ -62,6 +63,7 @@ def configure_routes(app):
         db.session.commit()
         return "Banco de dados configurado e administradores criados!"
 
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
@@ -79,15 +81,18 @@ def configure_routes(app):
 
         return render_template('auth/login.html')
 
+
     @app.route('/logout')
     def logout():
         session.clear()
         flash('Logout realizado!')
         return redirect(url_for('login'))
 
+
     @app.route('/')
     def site_home():
         return render_template('site/home.html', now=datetime.now())
+
 
     @app.route('/admin')
     def admin_home():
@@ -96,6 +101,38 @@ def configure_routes(app):
             flash("Você precisa estar logado para acessar o painel.")
             return redirect(url_for('login'))
         return render_template('home.html', usuario_logado=usuario_logado)
+    
+
+    @app.route('/perfil')
+    @login_requerido
+    def perfil():
+        usuario = Usuario.query.get(session['usuario_id'])
+        return render_template('perfil.html', usuario=usuario)
+    
+
+    @app.route('/alterar_senha', methods=['POST'])
+    @login_requerido
+    def alterar_senha():
+        usuario = Usuario.query.get(session['usuario_id'])
+
+        senha_atual = request.form['senha_atual']
+        nova_senha = request.form['nova_senha']
+        confirmar_senha = request.form['confirmar_senha']
+
+        if not check_password_hash(usuario.senha, senha_atual):
+            flash('Senha atual incorreta.', 'danger')
+            return redirect(url_for('perfil'))
+
+        if nova_senha != confirmar_senha:
+            flash('As novas senhas não coincidem.', 'danger')
+            return redirect(url_for('perfil'))
+
+        usuario.senha = generate_password_hash(nova_senha)
+        db.session.commit()
+
+        flash('Senha atualizada com sucesso!', 'success')
+        return redirect(url_for('perfil'))
+
 
     @app.route('/membros')
     @login_requerido
@@ -223,8 +260,8 @@ def configure_routes(app):
 
             flash('Membro cadastrado com sucesso!')
             return redirect(url_for('listar_membros'))
-
         return render_template('membros/novo.html')
+
 
     @app.route('/membros/editar/<int:membro_id>', methods=['GET', 'POST'])
     @login_requerido
@@ -268,8 +305,8 @@ def configure_routes(app):
             db.session.commit()
             flash('Membro atualizado com sucesso!')
             return redirect(url_for('listar_membros'))
-
         return render_template('membros/editar.html', membro=membro)
+
 
     @app.route('/membros/excluir/<int:membro_id>', methods=['POST'])
     @login_requerido
@@ -281,6 +318,8 @@ def configure_routes(app):
         flash('Membro excluído com sucesso!')
         return redirect(url_for('listar_membros'))
 
+
+
     @app.route('/membro/<int:membro_id>/carteirinha')
     @login_requerido
     def carteirinha_membro(membro_id):
@@ -291,8 +330,8 @@ def configure_routes(app):
         img_io = BytesIO()
         qr.save(img_io, 'PNG')
         img_io.seek(0)
-
         return render_template('membros/carteirinha.html', membro=membro, qr_code=img_io)
+
 
     # 👉 API JSON de membros ordenada por nome
     @app.route('/api/membros', methods=['GET'])
@@ -301,6 +340,7 @@ def configure_routes(app):
         membros_json = [m.to_dict() for m in membros]
         return jsonify(membros_json)
     
+
     @app.route('/exportar_membros')
     def exportar_membros():
         from io import BytesIO

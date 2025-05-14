@@ -80,6 +80,19 @@
       color: #fff;
     }
 
+    .avatar-circle {
+      background-color: #ec5f68;
+      color: #fff;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
     .footer {
       background-color: #69171c;
       color: #fff;
@@ -114,7 +127,21 @@
             {% if usuario_logado and usuario_logado.is_admin %}
               <li class="nav-item"><a class="nav-link" href="{{ url_for('novo_membro') }}">Novo</a></li>
             {% endif %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Sair</a></li>
+
+            <!-- Menu de perfil -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="avatar-circle me-2">
+                  {{ usuario_logado.nome[0:2] }}
+                </div>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('perfil') }}"><i class="bi bi-person-circle me-2"></i> Meu Perfil</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i> Sair</a></li>
+              </ul>
+            </li>
+
           {% else %}
             <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
             <li class="nav-item ms-lg-3">
@@ -125,6 +152,7 @@
           {% endif %}
         </ul>
       </div>
+
     </div>
   </nav>
 
