@@ -1,0 +1,102 @@
+📄 Documentação do Sistema — Painel de Gestão Adnipo
+📌 Visão Geral
+O Painel de Gestão Adnipo é um sistema web desenvolvido para facilitar a administração de membros, eventos e reuniões de uma organização. A aplicação conta com controle de acesso baseado em permissões e oferece funcionalidades diferenciadas para administradores e usuários comuns.
+
+📚 Funcionalidades Principais
+✅ Autenticação e Controle de Acesso
+Login e senha para acesso ao painel.
+
+Controle de permissões através da flag is_admin:
+
+is_admin = True → Acesso total: cadastrar, editar e excluir membros, reuniões e eventos.
+
+is_admin = False → Acesso restrito: apenas visualização de informações.
+
+✅ Cadastro Automático de Usuário ao Cadastrar Membro
+Quando o administrador cadastra um novo membro, o sistema automaticamente:
+
+Cria um usuário vinculado ao membro, com:
+
+Login: e-mail cadastrado do membro.
+
+Senha padrão: adnipo
+
+O membro pode acessar o sistema com essas credenciais e deverá trocar sua senha no primeiro acesso via a área de Perfil.
+
+✅ Gestão de Membros
+Administradores podem:
+
+Cadastrar novos membros.
+
+Editar informações.
+
+Excluir membros.
+
+✅ Gestão de Reuniões
+Administradores podem:
+
+Cadastrar, editar e excluir reuniões.
+
+Visualizar reuniões cadastradas.
+
+No painel, os usuários podem:
+
+Ver as próximas 3 reuniões organizadas em cards tipo grid.
+
+Adicionar reuniões diretamente ao Google Agenda via link.
+
+✅ Gestão de Eventos
+Funcionamento semelhante às reuniões:
+
+Administradores podem cadastrar, editar e excluir eventos.
+
+Usuários podem visualizar eventos disponíveis.
+
+Integração para adicionar evento ao Google Agenda.
+
+Exibição dos 3 próximos eventos no painel inicial.
+
+✅ Área de Perfil do Usuário
+Visualização e edição de informações pessoais.
+
+Alteração de senha.
+
+📊 Tecnologias Utilizadas
+Backend: Flask (Python)
+
+ORM: SQLAlchemy
+
+Banco de Dados: SQLite (para ambiente local)
+
+Front-end: HTML, CSS (Bootstrap + customização), Jinja2
+
+Ícones: Ícones Bootstrap
+
+Integração: Google Calendar (via link de template)
+
+🛡️ Controle de Permissões
+Toda rota sensível do sistema é protegida por decorators, garantindo que apenas usuários autorizados possam acessar, editar ou excluir dados.
+
+📝 Fluxo de Cadastro de Membro e Criação de Usuário
+Admin cadastra membro.
+
+Sistema cria automaticamente um usuário:
+
+Login: e-mail do membro.
+
+Senha padrão: adnipo.
+
+Permissão: is_admin = False.
+
+Membro acessa painel → Perfil → altera senha.
+
+📎 Considerações Finais
+O Painel Adnipo foi desenvolvido para ser simples, seguro e funcional. Seu modelo de permissões garante integridade no acesso aos dados, enquanto a integração com o Google Agenda facilita a gestão de reuniões e eventos.
+
+O sistema é modular e permite expansões futuras, como:
+
+Upload de arquivos.
+
+Notificações por e-mail.
+
+Dashboard estatístico.
