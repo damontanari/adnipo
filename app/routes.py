@@ -2,7 +2,7 @@
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
 from app.models import Membro, Usuario, Reuniao
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 import qrcode
 from io import BytesIO
@@ -103,7 +103,8 @@ def configure_routes(app):
             return redirect(url_for('login'))
         
         reuniao = Reuniao.query.order_by(Reuniao.data_hora.desc()).first()
-        return render_template('home.html', usuario_logado=usuario_logado, reuniao=reuniao)
+        return render_template('home.html', usuario_logado=usuario_logado, reuniao=reuniao, timedelta=timedelta)
+
     
 
     @app.route('/perfil')
@@ -416,8 +417,10 @@ def configure_routes(app):
     @app.route('/reunioes')
     @login_requerido
     def listar_reunioes():
+        usuario_logado = get_usuario_logado()
+        print(usuario_logado, usuario_logado.is_admin)  # 👈 adiciona isso aqui
         reunioes = Reuniao.query.order_by(Reuniao.data_hora.desc()).all()
-        return render_template('reunioes/lista.html', reunioes=reunioes, usuario_logado=get_usuario_logado())
+        return render_template('reunioes/lista.html', reunioes=reunioes, usuario_logado=usuario_logado)
 
 
     @app.route('/reunioes/nova', methods=['GET', 'POST'])
@@ -447,3 +450,32 @@ def configure_routes(app):
             return redirect(url_for('listar_reunioes'))
 
         return render_template('reunioes/nova.html')
+
+    @app.route('/reunioes/editar/<int:reuniao_id>', methods=['GET', 'POST'])
+    @login_requerido
+    @admin_requerido
+    def editar_reuniao(reuniao_id):
+        usuario_logado = get_usuario_logado()
+        reuniao = Reuniao.query.get_or_404(reuniao_id)
+
+        if request.method == 'POST':
+            reuniao.titulo = request.form['titulo']
+            reuniao.data_hora = request.form['data_hora']
+            reuniao.local = request.form['local']
+            reuniao.descricao = request.form['descricao']
+
+            db.session.commit()
+            flash('Reunião atualizada com sucesso!', 'success')
+            return redirect(url_for('listar_reunioes'))
+
+        return render_template('reunioes/editar.html', reuniao=reuniao, usuario_logado=usuario_logado)
+
+    @app.route('/reunioes/excluir/<int:reuniao_id>', methods=['POST'])
+    @login_requerido
+    @admin_requerido
+    def excluir_reuniao(reuniao_id):
+        reuniao = Reuniao.query.get_or_404(reuniao_id)
+        db.session.delete(reuniao)
+        db.session.commit()
+        flash('Reunião excluída com sucesso!', 'success')
+        return redirect(url_for('listar_reunioes'))

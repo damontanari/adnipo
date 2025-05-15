@@ -109,99 +109,106 @@
 <body>
 
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('site_home') }}">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="me-2">
-        Adnipo
-      </a>
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('site_home') }}">
+          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="me-2">
+          Adnipo
+        </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          {% if 'usuario_id' in session %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('admin_home') }}">
-              <i class="bi bi-house-door me-1"></i> Início
-            </a>
-          </li>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center">
 
-          {% if usuario_logado and usuario_logado.is_admin %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('listar_membros') }}">
-              <i class="bi bi-people me-1"></i> Membros
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('novo_membro') }}">
-              <i class="bi bi-person-plus me-1"></i> Novo
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
-              <i class="bi bi-calendar3-event me-1"></i> Reuniões
-            </a>
-          </li>
-          {% endif %}
+            {% if 'usuario_id' in session %}
 
-          <!-- Menu de perfil -->
-          {% if usuario_logado %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <div class="avatar-circle me-2">
-                {{ usuario_logado.nome[:1] }}
-              </div>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
-              <li>
-                <a class="dropdown-item" href="{{ url_for('perfil') }}">
-                  <i class="bi bi-person-circle me-2"></i> Meu Perfil
-                </a>
-              </li>
-
-              <li><hr class="dropdown-divider"></li>
-          
-              {% if not usuario_logado.is_admin and usuario_logado.membro_id %}
+              <!-- Início -->
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
-                  <i class="bi bi-calendar3-event me-1"></i> Reuniões
+                <a class="nav-link" href="{{ url_for('admin_home') }}">
+                  <i class="bi bi-house-door me-1"></i> Início
                 </a>
               </li>
-              <li>
-                <a class="dropdown-item" href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro_id) }}">
-                  <i class="bi bi-credit-card me-2"></i> Minha Carteirinha
-                </a>
-              </li>
-              {% endif %}
-              
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <a class="dropdown-item" href="{{ url_for('logout') }}">
-                  <i class="bi bi-box-arrow-right me-2"></i> Sair
-                </a>
-              </li>
-            </ul>
-          </li>
-          {% endif %}
 
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="#contato">
-              <i class="bi bi-envelope me-1"></i> Contato
-            </a>
-          </li>
-          <li class="nav-item ms-lg-3">
-            <a class="btn btn-light btn-sm" href="{{ url_for('login') }}">
-              <i class="bi bi-box-arrow-in-right"></i> Área Administrativa
-            </a>
-          </li>
-        {% endif %}
-        </ul>
+              <!-- Somente para admins -->
+              {% if usuario_logado and usuario_logado.is_admin %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('listar_membros') }}">
+                    <i class="bi bi-people me-1"></i> Membros
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('novo_membro') }}">
+                    <i class="bi bi-person-plus me-1"></i> Novo
+                  </a>
+                </li>
+              {% endif %}
+
+              <!-- Para admins e membros -->
+              {% if usuario_logado and (usuario_logado.is_admin or usuario_logado.membro_id) %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
+                    <i class="bi bi-calendar3-event me-1"></i> Reuniões
+                  </a>
+                </li>
+              {% endif %}
+
+              <!-- Menu de perfil -->
+              {% if usuario_logado %}
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="avatar-circle me-2">
+                      {{ usuario_logado.nome[:1] }}
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('perfil') }}">
+                        <i class="bi bi-person-circle me-2"></i> Meu Perfil
+                      </a>
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    {% if not usuario_logado.is_admin and usuario_logado.membro_id %}
+                      <li>
+                        <a class="dropdown-item" href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro_id) }}">
+                          <i class="bi bi-credit-card me-2"></i> Minha Carteirinha
+                        </a>
+                      </li>
+                    {% endif %}
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('logout') }}">
+                        <i class="bi bi-box-arrow-right me-2"></i> Sair
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+              {% endif %}
+
+            {% else %}
+              <!-- Para visitantes não logados -->
+              <li class="nav-item">
+                <a class="nav-link" href="#contato">
+                  <i class="bi bi-envelope me-1"></i> Contato
+                </a>
+              </li>
+              <li class="nav-item ms-lg-3">
+                <a class="btn btn-light btn-sm" href="{{ url_for('login') }}">
+                  <i class="bi bi-box-arrow-in-right"></i> Área Administrativa
+                </a>
+              </li>
+            {% endif %}
+
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
+
 
 
   <div class="container container-main">
