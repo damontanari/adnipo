@@ -148,11 +148,6 @@
 
           <!-- Menu de perfil -->
           {% if usuario_logado %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
-              <i class="bi bi-calendar3-event me-1"></i> Reuniões
-            </a>
-          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <div class="avatar-circle me-2">
@@ -169,6 +164,11 @@
               <li><hr class="dropdown-divider"></li>
           
               {% if not usuario_logado.is_admin and usuario_logado.membro_id %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
+                  <i class="bi bi-calendar3-event me-1"></i> Reuniões
+                </a>
+              </li>
               <li>
                 <a class="dropdown-item" href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro_id) }}">
                   <i class="bi bi-credit-card me-2"></i> Minha Carteirinha
