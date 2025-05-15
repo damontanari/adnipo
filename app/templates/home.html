@@ -53,6 +53,19 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <div>
+                            <h5 class="card-title">📅 Reuniões</h5>
+                            <p class="card-text">Confira as próximas e reuniões passadas.</p>
+                            <a href="{{ url_for('listar_reunioes') }}" class="btn btn-adnipo btn-sm">Ver Reuniões</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {% endif %}
             
             <div class="col-md-6 mb-4">
@@ -62,6 +75,26 @@
                     <p class="card-text">Encerrar sua sessão e retornar para a área pública do site.</p>
                     <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
                     </div>
+                </div>
+            </div>
+
+            <div class="card mb-3" style="border-radius: 15px;">
+                <div class="card-body">
+                    {% if reuniao %}
+                        <h5 class="card-title">{{ reuniao.tema }}</h5>
+                        <p class="card-text">{{ reuniao.descricao }}</p>
+                        <p class="card-text">
+                            <i class="bi bi-calendar-event"></i> {{ reuniao.data_hora.strftime('%d/%m/%Y %H:%M') }} <br>
+                            <i class="bi bi-geo-alt"></i> {{ reuniao.local }}
+                        </p>
+                        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ reuniao.tema }}&dates={{ reuniao.data_hora.strftime('%Y%m%dT%H%M00Z') }}/{{ (reuniao.data_hora + timedelta(hours=1)).strftime('%Y%m%dT%H%M00Z') }}&details={{ reuniao.descricao }}&location={{ reuniao.local }}" 
+                        target="_blank" class="btn btn-adnipo">
+                        Adicionar ao Google Agenda
+                        </a>
+                    {% else %}
+                        <h5 class="card-title">Nenhuma reunião agendada</h5>
+                        <p class="card-text">Atualmente não há reuniões cadastradas.</p>
+                    {% endif %}
                 </div>
             </div>
 

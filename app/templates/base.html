@@ -139,14 +139,24 @@
               <i class="bi bi-person-plus me-1"></i> Novo
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
+              <i class="bi bi-calendar3-event me-1"></i> Reuniões
+            </a>
+          </li>
           {% endif %}
 
           <!-- Menu de perfil -->
           {% if usuario_logado %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
+              <i class="bi bi-calendar3-event me-1"></i> Reuniões
+            </a>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <div class="avatar-circle me-2">
-                {{ usuario_logado.nome[:2] }}
+                {{ usuario_logado.nome[:1] }}
               </div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">

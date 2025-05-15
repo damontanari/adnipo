@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
-from app.models import Membro, Usuario
+from app.models import Membro, Usuario, Reuniao
 from datetime import datetime
 from functools import wraps
 import qrcode
@@ -101,7 +101,9 @@ def configure_routes(app):
         if not usuario_logado:
             flash("Você precisa estar logado para acessar o painel.")
             return redirect(url_for('login'))
-        return render_template('home.html', usuario_logado=usuario_logado)
+        
+        reuniao = Reuniao.query.order_by(Reuniao.data_hora.desc()).first()
+        return render_template('home.html', usuario_logado=usuario_logado, reuniao=reuniao)
     
 
     @app.route('/perfil')
@@ -410,3 +412,38 @@ def configure_routes(app):
         return send_file(output, download_name='membros_completo.xlsx', as_attachment=True)
 
 
+
+    @app.route('/reunioes')
+    @login_requerido
+    def listar_reunioes():
+        reunioes = Reuniao.query.order_by(Reuniao.data_hora.desc()).all()
+        return render_template('reunioes/lista.html', reunioes=reunioes, usuario_logado=get_usuario_logado())
+
+
+    @app.route('/reunioes/nova', methods=['GET', 'POST'])
+    @login_requerido
+    @admin_requerido
+    def nova_reuniao():
+        if request.method == 'POST':
+            titulo = request.form.get('titulo')
+            data_hora_str = request.form.get('data_hora')
+            local = request.form.get('local')
+            descricao = request.form.get('descricao')
+
+            data_hora = datetime.strptime(data_hora_str, '%Y-%m-%dT%H:%M')  # campo tipo datetime-local no form
+
+            nova_reuniao = Reuniao(
+                titulo=titulo,
+                data_hora=data_hora,
+                local=local,
+                descricao=descricao,
+                criador_id=session.get('usuario_id')
+            )
+
+            db.session.add(nova_reuniao)
+            db.session.commit()
+
+            flash('Reunião criada com sucesso!', 'success')
+            return redirect(url_for('listar_reunioes'))
+
+        return render_template('reunioes/nova.html')
