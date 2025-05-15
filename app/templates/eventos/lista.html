@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">📅 Lista de Eventos</h1>
+        <div>
+            {% if usuario_logado and usuario_logado.is_admin %}
+            <a href="{{ url_for('novo_evento') }}" class="btn btn-adnipo">
+                <i class="bi bi-plus-circle me-1"></i> Novo Evento
+            </a>
+            {% else %}
+            <a href="{{ url_for('admin_home') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Título</th>
+                            <th>Data e Hora</th>
+                            <th>Local</th>
+                            <th>Descrição</th>
+                            {% if usuario_logado and usuario_logado.is_admin %}
+                            <th class="text-center">Ações</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in eventos %}
+                        <tr>
+                            <td>{{ e.titulo }}</td>
+                            <td>{{ e.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ e.local }}</td>
+                            <td>{{ e.descricao }}</td>
+                            {% if usuario_logado and usuario_logado.is_admin %}
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('editar_evento', evento_id=e.id) }}" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ url_for('excluir_evento', evento_id=e.id) }}" method="post" onsubmit="return confirmarExclusao();" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Excluir">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Se quiser paginação depois -->
+    {# 
+    {% if pagination %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('listar_eventos', page=pagination.prev_num) }}" aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+            {% endif %}
+
+            {% for p in pagination.iter_pages() %}
+                {% if p %}
+                    {% if p == pagination.page %}
+                        <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('listar_eventos', page=p) }}">{{ p }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('listar_eventos', page=pagination.next_num) }}" aria-label="Próximo">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    #}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmarExclusao() {
+    return confirm("Tem certeza que deseja excluir esta reunião?");
+}
+
+// Ativa os tooltips do Bootstrap
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl)
+})
+</script>
+{% endblock %}
+
+<style>
+.table th, .table td {
+    vertical-align: middle;
+}
+.table thead th {
+    text-align: center;
+}
+.btn-group .btn {
+    margin-right: 4px;
+}
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+</style>

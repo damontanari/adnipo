@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
-from app.models import Membro, Usuario, Reuniao
+from app.models import Membro, Usuario, Reuniao, Evento
 from datetime import datetime, timedelta
 from functools import wraps
 import qrcode
@@ -11,7 +11,6 @@ import os
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.utils import allowed_file
-
 
 # Função para recuperar o usuário logado
 def get_usuario_logado():
@@ -98,12 +97,17 @@ def configure_routes(app):
     @app.route('/admin')
     def admin_home():
         usuario_logado = get_usuario_logado()
+        
         if not usuario_logado:
             flash("Você precisa estar logado para acessar o painel.")
             return redirect(url_for('login'))
         
         reuniao = Reuniao.query.order_by(Reuniao.data_hora.desc()).first()
-        return render_template('home.html', usuario_logado=usuario_logado, reuniao=reuniao, timedelta=timedelta)
+        # reunioes = Reuniao.query.order_by(Reuniao.data_hora.asc()).all()
+        reunioes = Reuniao.query.filter(Reuniao.data_hora >= datetime.now()).order_by(Reuniao.data_hora.asc()).limit(3).all()
+        eventos = Evento.query.filter(Evento.data_hora >= datetime.now()).order_by(Evento.data_hora.asc()).limit(3).all()
+
+        return render_template('home.html', usuario_logado=usuario_logado, reuniao=reunioes, timedelta=timedelta, evento=eventos)
 
     
 
@@ -413,15 +417,19 @@ def configure_routes(app):
         return send_file(output, download_name='membros_completo.xlsx', as_attachment=True)
 
 
-
+    ## Reuniões
     @app.route('/reunioes')
     @login_requerido
     def listar_reunioes():
         usuario_logado = get_usuario_logado()
-        print(usuario_logado, usuario_logado.is_admin)  # 👈 adiciona isso aqui
-        reunioes = Reuniao.query.order_by(Reuniao.data_hora.desc()).all()
-        return render_template('reunioes/lista.html', reunioes=reunioes, usuario_logado=usuario_logado)
+        if usuario_logado:
+            print(usuario_logado, usuario_logado.is_admin)
+        else:
+            print("Nenhum usuário logado.")
 
+        reunioes = Reuniao.query.order_by(Reuniao.data_hora.asc()).all()
+        proxima_reuniao = Reuniao.query.filter(Reuniao.data_hora >= datetime.now()).order_by(Reuniao.data_hora.asc()).first()
+        return render_template('reunioes/lista.html', reunioes=reunioes, usuario_logado=usuario_logado)
 
     @app.route('/reunioes/nova', methods=['GET', 'POST'])
     @login_requerido
@@ -479,3 +487,114 @@ def configure_routes(app):
         db.session.commit()
         flash('Reunião excluída com sucesso!', 'success')
         return redirect(url_for('listar_reunioes'))
+
+
+    @app.route('/api/reunioes')
+    @login_requerido
+    def api_reunioes():
+        reunioes = Reuniao.query.all()
+
+        eventos = []
+        for r in reunioes:
+            eventos.append({
+                'id': r.id,
+                'title': f"Reunião - {r.titulo}",
+                'start': r.data_hora.strftime('%Y-%m-%dT%H:%M:%S'),
+                'description': r.descricao,
+                'allDay': False
+            })
+
+        return jsonify(eventos)
+    
+
+    ## Eventos
+    @app.route('/eventos')
+    @login_requerido
+    def listar_eventos():
+        usuario_logado = get_usuario_logado()
+        if usuario_logado:
+            print(usuario_logado, usuario_logado.is_admin)
+        else:
+            print("Nenhum usuário logado.")
+
+        eventos = Evento.query.order_by(Evento.data_hora.asc()).all()
+        proximo_evento = Evento.query.filter(Evento.data_hora >= datetime.now()).order_by(Evento.data_hora.asc()).first()
+        return render_template('eventos/lista.html', eventos=eventos, usuario_logado=usuario_logado)
+    
+
+    @app.route('/eventos/novo', methods=['GET', 'POST'])
+    @login_requerido
+    @admin_requerido
+    def novo_evento():
+        if request.method == 'POST':
+            titulo = request.form.get('titulo')
+            data_hora_str = request.form.get('data_hora')
+            local = request.form.get('local')
+            descricao = request.form.get('descricao')
+
+            data_hora = datetime.strptime(data_hora_str, '%Y-%m-%dT%H:%M')  # campo tipo datetime-local no form
+
+            novo_evento = Evento(
+                titulo=titulo,
+                data_hora=data_hora,
+                local=local,
+                descricao=descricao,
+                criador_id=session.get('usuario_id')
+            )
+
+            db.session.add(novo_evento)
+            db.session.commit()
+
+            flash('Reunião criada com sucesso!', 'success')
+            return redirect(url_for('listar_eventos'))
+
+        return render_template('eventos/novo.html')
+    
+
+    @app.route('/eventos/editar/<int:evento_id>', methods=['GET', 'POST'])
+    @login_requerido
+    @admin_requerido
+    def editar_evento(evento_id):
+        usuario_logado = get_usuario_logado()
+        evento = Evento.query.get_or_404(evento_id)
+
+        if request.method == 'POST':
+            evento.titulo = request.form['titulo']
+            evento.data_hora = request.form['data_hora']
+            evento.local = request.form['local']
+            evento.descricao = request.form['descricao']
+
+            db.session.commit()
+            flash('Reunião atualizada com sucesso!', 'success')
+            return redirect(url_for('listar_eventos'))
+
+        return render_template('eventos/editar.html', evento=evento, usuario_logado=usuario_logado)
+    
+    @app.route('/eventos/excluir/<int:evento_id>', methods=['POST'])
+    @login_requerido
+    @admin_requerido
+    def excluir_evento(evento_id):
+        evento = Evento.query.get_or_404(evento_id)
+        db.session.delete(evento)
+        db.session.commit()
+        flash('Reunião excluída com sucesso!', 'success')
+        return redirect(url_for('listar_eventos'))
+    
+
+    @app.route('/api/eventos')
+    @login_requerido
+    def api_eventos():
+        eventos = Evento.query.all()
+
+        lista_eventos = []
+        for e in eventos:
+            lista_eventos.append({
+                'id': e.id,
+                'title': f"Evento - {e.titulo}",
+                'start': e.data_hora.strftime('%Y-%m-%dT%H:%M:%S'),
+                'description': e.descricao,
+                'allDay': False
+            })
+
+        return jsonify(eventos)
+

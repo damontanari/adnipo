@@ -1,106 +1,210 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <!-- <h1 class="display-5">Seja bem-vindo, {{ usuario_logado.nome }}!</h1> -->
 
-    <div class="container my-5">
-        <div class="text-center mb-5">
-            <h1>Bem-vindo, {{ usuario_logado.nome }}!</h1>
-            <p class="lead">Este é o Painel Administrativo da Assembleia de Deus Nipo Brasileira - ADNIPO.</p>
-            <hr class="my-4">
-        </div>
-
-        <div class="row">
-            {% if usuario_logado.is_admin %}
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                    <h5 class="card-title">📋 Gerenciar Membros</h5>
-                    <p class="card-text">Visualize, cadastre, edite e exclua informações de membros da igreja.</p>
-                    <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Acessar</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                    <h5 class="card-title">📊 Relatórios e Estatísticas</h5>
-                    <p class="card-text">Veja estatísticas de membros por cidade, ofício e muito mais.</p>
-                    <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Ver Relatórios</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                    <h5 class="card-title">➕ Novo Membro</h5>
-                    <p class="card-text">Adicione novos membros ao cadastro com informações completas.</p>
-                    <a href="{{ url_for('novo_membro') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            {% if not usuario_logado.is_admin and usuario_logado.membro %}
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">🪪 Minha Carteirinha</h5>
-                        <p class="card-text">Visualize sua carteirinha digital com QR Code.</p>
-                        <a href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro.id) }}" class="btn btn-adnipo btn-sm">Ver Carteirinha</a>
-                    </div>
-                </div>
-            </div>
-
-            {% endif %}
-
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <div>
-                            <h5 class="card-title">📅 Reuniões</h5>
-                            <p class="card-text">Confira as próximas e reuniões passadas.</p>
-                            <a href="{{ url_for('listar_reunioes') }}" class="btn btn-adnipo btn-sm">Ver Reuniões</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                    <h5 class="card-title">🚪 Sair</h5>
-                    <p class="card-text">Encerrar sua sessão e retornar para a área pública do site.</p>
-                    <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-3" style="border-radius: 15px;">
-                <div class="card-body">
-                    {% if reuniao %}
-                        <h5 class="card-title">{{ reuniao.tema }}</h5>
-                        <p class="card-text">{{ reuniao.descricao }}</p>
-                        <p class="card-text">
-                            <i class="bi bi-calendar-event"></i> {{ reuniao.data_hora.strftime('%d/%m/%Y %H:%M') }} <br>
-                            <i class="bi bi-geo-alt"></i> {{ reuniao.local }}
-                        </p>
-                        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ reuniao.tema }}&dates={{ data_inicio }}/{{ data_fim }}&details={{ reuniao.descricao }}&location={{ reuniao.local }}"
-                        target="_blank" class="btn btn-adnipo">
-                        Adicionar ao Google Agenda
-                        </a>
-                    {% else %}
-                        <h5 class="card-title">Nenhuma reunião agendada</h5>
-                        <p class="card-text">Atualmente não há reuniões cadastradas.</p>
-                    {% endif %}
-                </div>
-            </div>
-
-
-
-        </div>
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1>Bem-vindo, {{ usuario_logado.nome }}!</h1>
+        <p class="lead">Este é o Painel Administrativo da Assembleia de Deus Nipo Brasileira - ADNIPO.</p>
+        <hr class="my-4">
     </div>
 
+    <div class="row">
+
+    {% if usuario_logado.is_admin %}
+      <!-- Cards para admin -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">📋 Gerenciar Membros</h5>
+            <p class="card-text">Visualize, cadastre, edite e exclua informações de membros da igreja.</p>
+            <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">📊 Relatórios e Estatísticas</h5>
+            <p class="card-text">Veja estatísticas de membros por cidade, ofício e muito mais.</p>
+            <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Ver Relatórios</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">➕ Novo Membro</h5>
+            <p class="card-text">Adicione novos membros ao cadastro com informações completas.</p>
+            <a href="{{ url_for('novo_membro') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">📌 Nova Reunião</h5>
+            <p class="card-text">Adicione uma nova reunião com informações completas.</p>
+            <a href="{{ url_for('nova_reuniao') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">🟢 Novo Evento</h5>
+            <p class="card-text">Adicione um novo evento com informações completas.</p>
+            <a href="{{ url_for('novo_evento') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if not usuario_logado.is_admin and usuario_logado.membro %}
+      <!-- Card de carteirinha -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">🪪 Minha Carteirinha</h5>
+            <p class="card-text">Visualize sua carteirinha digital com QR Code.</p>
+            <a href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro.id) }}" class="btn btn-adnipo btn-sm">Ver Carteirinha</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Card de reuniões -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">📅 Visualizar Reuniões</h5>
+          <p class="card-text">Confira as próximas e reuniões passadas.</p>
+          <a href="{{ url_for('listar_reunioes') }}" class="btn btn-adnipo btn-sm">Ver Reuniões</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card de logout -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">🚪 Sair</h5>
+          <p class="card-text">Encerrar sua sessão e retornar para a área pública do site.</p>
+          <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Card de Calendário -->
+  <div class="card mb-4" style="border-radius: 15px;">
+    <div class="card-body">
+      <h5 class="card-title">📅 Reuniões mais Próximas</h5>
+      <div id="calendar"></div>
+    </div>
+  </div>
+
+  <!-- Card de Próxima Reunião -->
+  {% if reuniao %}
+    <div class="row">
+        {% for reuniao in reuniao %}
+        <div class="col-md-4 mb-4"> <!-- cada card ocupa 4 colunas em md pra cima = 3 cards por linha -->
+            <div class="card h-100 shadow-sm border-0" style="border-radius: 15px;">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ reuniao.titulo }}</h5>
+                <p class="card-text flex-grow-1">{{ reuniao.descricao }}</p>
+                <p class="card-text">
+                <i class="bi bi-calendar-event"></i> {{ reuniao.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
+                <i class="bi bi-geo-alt"></i> {{ reuniao.local }}
+                </p>
+                <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ reuniao.titulo }}&dates={{ reuniao.data_hora.strftime('%Y%m%dT%H%M%S') }}/{{ reuniao.data_hora.strftime('%Y%m%dT%H%M%S') }}&details={{ reuniao.descricao }}&location={{ reuniao.local }}" target="_blank" class="btn btn-adnipo mt-auto">
+                Adicionar ao Google Agenda
+                </a>
+            </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <h5 class="card-title">Nenhuma reunião agendada</h5>
+    <p class="card-text">Atualmente não há reuniões cadastradas.</p>
+    {% endif %}
+
+    <!-- Card de Eventos -->
+    <div class="card mb-4" style="border-radius: 15px;">
+      <div class="card-body">
+        <h5 class="card-title">🟢 Eventos mais Próximos</h5>
+        <div id="calendar"></div>
+      </div>
+    </div>
+
+    <!-- Card de Próxima Reunião -->
+    {% if evento %}
+      <div class="row">
+          {% for e in evento %}
+          <div class="col-md-4 mb-4"> <!-- cada card ocupa 4 colunas em md pra cima = 3 cards por linha -->
+              <div class="card h-100 shadow-sm border-0" style="border-radius: 15px;">
+              <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">{{ e.titulo }}</h5>
+                  <p class="card-text flex-grow-1">{{ e.descricao }}</p>
+                  <p class="card-text">
+                  <i class="bi bi-calendar-event"></i> {{ e.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
+                  <i class="bi bi-geo-alt"></i> {{ e.local }}
+                  </p>
+                  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ e.titulo }}&dates={{ e.data_hora.strftime('%Y%m%dT%H%M%S') }}/{{ e.data_hora.strftime('%Y%m%dT%H%M%S') }}&details={{ e.descricao }}&location={{ e.local }}" target="_blank" class="btn btn-adnipo mt-auto">
+                  Adicionar ao Google Agenda
+                  </a>
+              </div>
+              </div>
+          </div>
+          {% endfor %}
+      </div>
+      {% else %}
+      <h5 class="card-title">Nenhum evento agendado</h5>
+      <p class="card-text">Atualmente não há eventos cadastrados.</p>
+      {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.min.js'></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    if (calendarEl) {
+      calendarEl.style.minHeight = '0px'; // garante altura no JS também
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'pt-br',
+        timeZone: 'local',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        events: {
+          url: '/api/reunioes',
+          failure: function() {
+            alert('Erro ao carregar as reuniões 😢');
+          }
+        },
+        eventClick: function(info) {
+          info.jsEvent.preventDefault();
+
+          alert(
+            '📌 Evento: ' + info.event.title + '\n\n📝 Descrição: ' + (info.event.extendedProps.description || 'Sem descrição')
+          );
+        }
+      });
+
+      calendar.render();
+    }
+  });
+</script>
 {% endblock %}

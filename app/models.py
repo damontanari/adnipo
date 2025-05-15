@@ -88,3 +88,13 @@ class Reuniao(db.Model):
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
 
+
+class Evento(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(200), nullable=False)
+    data_hora = db.Column(db.DateTime, nullable=False)
+    local = db.Column(db.String(200), nullable=False)
+    descricao = db.Column(db.Text, nullable=True)
+    data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+
