@@ -15,6 +15,12 @@ usuario_publico_associacao = db.Table('usuario_publico_associacao',
     db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
 )
 
+membro_publico = db.Table('membro_publico',
+    db.Column('membro_id', db.Integer, db.ForeignKey('membro.id'), primary_key=True),
+    db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
+)
+
+
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(128), nullable=False)
@@ -84,11 +90,8 @@ class Membro(db.Model):
 
     # Relacionamento com o usuário que cadastrou
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    usuario = relationship(
-        'Usuario',
-        backref='membros_cadastrados',
-        foreign_keys='Membro.usuario_id'
-    )
+    usuario = relationship('Usuario', backref='membros_cadastrados', foreign_keys='Membro.usuario_id')
+    publicos = db.relationship('Publico', secondary=membro_publico, backref='membros')
 
     # Nova coluna para a foto
     foto = db.Column(db.String(120), nullable=True)
@@ -105,6 +108,9 @@ class Reuniao(db.Model):
     descricao = db.Column(db.Text, nullable=True)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+
+    def __repr__(self):
+        return f"<Reuniao {self.titulo}>"
 
 
 class Evento(db.Model):
