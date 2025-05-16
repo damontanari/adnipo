@@ -3,6 +3,18 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
 
+# Tabela de associação Evento ↔ Publico
+evento_publico_associacao = db.Table('evento_publico_associacao',
+    db.Column('evento_id', db.Integer, db.ForeignKey('evento.id'), primary_key=True),
+    db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
+)
+
+# Tabela de associação Usuario ↔ Publico
+usuario_publico_associacao = db.Table('usuario_publico_associacao',
+    db.Column('usuario_id', db.Integer, db.ForeignKey('usuario.id'), primary_key=True),
+    db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
+)
+
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(128), nullable=False)
@@ -17,6 +29,12 @@ class Usuario(db.Model):
         backref='usuario_vinculado',
         uselist=False,
         foreign_keys='Usuario.membro_id'
+    )
+
+    publicos = db.relationship(
+        'Publico',
+        secondary=usuario_publico_associacao,
+        back_populates='usuarios'
     )
 
     def set_senha(self, senha):
@@ -97,4 +115,15 @@ class Evento(db.Model):
     descricao = db.Column(db.Text, nullable=True)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    publicos = db.relationship('Publico', secondary=evento_publico_associacao, back_populates='eventos')
+
+    def __repr__(self):
+        return f"<Evento {self.titulo}>"
+
+class Publico(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False, unique=True)
+    eventos = db.relationship('Evento', secondary=evento_publico_associacao, back_populates='publicos')
+    usuarios = db.relationship('Usuario', secondary=usuario_publico_associacao, back_populates='publicos')
+
 

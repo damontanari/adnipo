@@ -40,7 +40,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-6 mb-4">
+      <!-- <div class="col-md-6 mb-4">
         <div class="card shadow-sm border-0">
           <div class="card-body">
             <h5 class="card-title">📌 Nova Reunião</h5>
@@ -48,11 +48,11 @@
             <a href="{{ url_for('nova_reuniao') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
           </div>
         </div>
-      </div>
+      </div> -->
       <div class="col-md-6 mb-4">
         <div class="card shadow-sm border-0">
           <div class="card-body">
-            <h5 class="card-title">🟢 Novo Evento</h5>
+            <h5 class="card-title">📅 Novo Evento</h5>
             <p class="card-text">Adicione um novo evento com informações completas.</p>
             <a href="{{ url_for('novo_evento') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
           </div>
@@ -74,7 +74,7 @@
     {% endif %}
 
     <!-- Card de reuniões -->
-    <div class="col-md-6 mb-4">
+    <!-- <div class="col-md-6 mb-4">
       <div class="card shadow-sm border-0">
         <div class="card-body">
           <h5 class="card-title">📅 Visualizar Reuniões</h5>
@@ -82,14 +82,14 @@
           <a href="{{ url_for('listar_reunioes') }}" class="btn btn-adnipo btn-sm">Ver Reuniões</a>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Card de eventos -->
     <div class="col-md-6 mb-4">
       <div class="card shadow-sm border-0">
         <div class="card-body">
-          <h5 class="card-title">🟢 Visualizar Eventos</h5>
-          <p class="card-text">Confira os próximos e eventos passadas.</p>
+          <h5 class="card-title">📅 Visualizar Eventos</h5>
+          <p class="card-text">Confira os próximos eventos.</p>
           <a href="{{ url_for('listar_eventos') }}" class="btn btn-adnipo btn-sm">Ver Eventos</a>
         </div>
       </div>
@@ -109,19 +109,19 @@
   </div>
 
   <!-- Card de Calendário -->
-  <div class="card mb-4" style="border-radius: 15px;">
+  <!-- <div class="card mb-4" style="border-radius: 15px;">
     <div class="card-body">
       <h5 class="card-title">📅 Reuniões mais Próximas</h5>
       <div id="calendar"></div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Card de Próxima Reunião -->
-  {% if reuniao %}
+  <!-- {% if reuniao %}
     <div class="row">
         {% for reuniao in reuniao %}
-        <div class="col-md-4 mb-4"> <!-- cada card ocupa 4 colunas em md pra cima = 3 cards por linha -->
-            <div class="card h-100 shadow-sm border-0" style="border-radius: 15px;">
+        <div class="col-md-4 mb-4">  cada card ocupa 4 colunas em md pra cima = 3 cards por linha -->
+            <!-- <div class="card h-100 shadow-sm border-0" style="border-radius: 15px;">
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title">{{ reuniao.titulo }}</h5>
                 <p class="card-text flex-grow-1">{{ reuniao.descricao }}</p>
@@ -140,7 +140,7 @@
     {% else %}
     <h5 class="card-title">Nenhuma reunião agendada</h5>
     <p class="card-text">Atualmente não há reuniões cadastradas.</p>
-    {% endif %}
+    {% endif %} -->
 
     <!-- Card de Eventos -->
     <div class="card mb-4" style="border-radius: 15px;">
@@ -160,6 +160,11 @@
                   <h5 class="card-title">{{ e.titulo }}</h5>
                   <p class="card-text flex-grow-1">{{ e.descricao }}</p>
                   <p class="card-text">
+                  {% if e.publicos %}
+                    {% for p in e.publicos %}
+                      <i class="bi bi-person-fill-lock"></i> {{ p.nome }}<br>
+                    {% endfor %}
+                  {% endif %}
                   <i class="bi bi-calendar-event"></i> {{ e.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
                   <i class="bi bi-geo-alt"></i> {{ e.local }}
                   </p>
@@ -200,9 +205,9 @@
           right: 'dayGridMonth,timeGridWeek,listWeek'
         },
         events: {
-          url: '/api/reunioes',
+          url: '/api/eventos',
           failure: function() {
-            alert('Erro ao carregar as reuniões 😢');
+            alert('Erro ao carregar os eventos 😢');
           }
         },
         eventClick: function(info) {

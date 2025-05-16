@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
-from app.models import Membro, Usuario, Reuniao, Evento
+from app.models import Membro, Usuario, Reuniao, Evento, Publico, evento_publico_associacao
 from datetime import datetime, timedelta
 from functools import wraps
 import qrcode
@@ -97,17 +97,34 @@ def configure_routes(app):
     @app.route('/admin')
     def admin_home():
         usuario_logado = get_usuario_logado()
-        
+
         if not usuario_logado:
             flash("Você precisa estar logado para acessar o painel.")
             return redirect(url_for('login'))
-        
-        reuniao = Reuniao.query.order_by(Reuniao.data_hora.desc()).first()
-        # reunioes = Reuniao.query.order_by(Reuniao.data_hora.asc()).all()
-        reunioes = Reuniao.query.filter(Reuniao.data_hora >= datetime.now()).order_by(Reuniao.data_hora.asc()).limit(3).all()
-        eventos = Evento.query.filter(Evento.data_hora >= datetime.now()).order_by(Evento.data_hora.asc()).limit(3).all()
 
-        return render_template('home.html', usuario_logado=usuario_logado, reuniao=reunioes, timedelta=timedelta, evento=eventos)
+        # pega os ids dos públicos que ele pertence
+        ids_publicos_usuario = [p.id for p in usuario_logado.publicos]
+
+        # pega os eventos que tenham algum desses públicos e que ainda vão acontecer
+        eventos = Evento.query\
+            .join(evento_publico_associacao)\
+            .filter(evento_publico_associacao.c.publico_id.in_(ids_publicos_usuario))\
+            .filter(Evento.data_hora >= datetime.now())\
+            .order_by(Evento.data_hora.asc())\
+            .limit(3)\
+            .all()
+
+        reunioes = Reuniao.query.filter(Reuniao.data_hora >= datetime.now()).order_by(Reuniao.data_hora.asc()).limit(3).all()
+        publicos = Publico.query.all()
+
+        return render_template(
+            'home.html',
+            usuario_logado=usuario_logado,
+            reuniao=reunioes,
+            timedelta=timedelta,
+            evento=eventos,
+            publicos=publicos
+        )
 
     
 
@@ -512,14 +529,26 @@ def configure_routes(app):
     @login_requerido
     def listar_eventos():
         usuario_logado = get_usuario_logado()
+
         if usuario_logado:
             print(usuario_logado, usuario_logado.is_admin)
         else:
             print("Nenhum usuário logado.")
 
-        eventos = Evento.query.order_by(Evento.data_hora.asc()).all()
+        # Se for admin, vê todos. Se for membro, filtra
+        if usuario_logado.is_admin:
+            eventos_para_mim = Evento.query.order_by(Evento.data_hora.asc()).all()
+        else:
+            oficio_usuario = usuario_logado.membro.oficio if usuario_logado.membro else None
+
+            eventos_para_mim = Evento.query.join(Evento.publicos).filter(
+                (Publico.nome == 'Todos') |
+                (Publico.nome == oficio_usuario)
+            ).order_by(Evento.data_hora.asc()).all()
+
         proximo_evento = Evento.query.filter(Evento.data_hora >= datetime.now()).order_by(Evento.data_hora.asc()).first()
-        return render_template('eventos/lista.html', eventos=eventos, usuario_logado=usuario_logado)
+
+        return render_template('eventos/lista.html', eventos=eventos_para_mim, usuario_logado=usuario_logado)
     
 
     @app.route('/eventos/novo', methods=['GET', 'POST'])
@@ -527,12 +556,11 @@ def configure_routes(app):
     @admin_requerido
     def novo_evento():
         if request.method == 'POST':
-            titulo = request.form.get('titulo')
-            data_hora_str = request.form.get('data_hora')
-            local = request.form.get('local')
-            descricao = request.form.get('descricao')
-
-            data_hora = datetime.strptime(data_hora_str, '%Y-%m-%dT%H:%M')  # campo tipo datetime-local no form
+            titulo = request.form['titulo']
+            data_hora = datetime.strptime(request.form['data_hora'], '%Y-%m-%dT%H:%M')
+            local = request.form['local']
+            descricao = request.form['descricao']
+            publicos_ids = request.form.getlist('publicos')
 
             novo_evento = Evento(
                 titulo=titulo,
@@ -542,13 +570,23 @@ def configure_routes(app):
                 criador_id=session.get('usuario_id')
             )
 
+            # agora associa os públicos selecionados
+            if 'Todos' in publicos_ids:
+                todos_publicos = Publico.query.all()
+                novo_evento.publicos = todos_publicos
+            else:
+                publicos_selecionados = Publico.query.filter(Publico.id.in_(publicos_ids)).all()
+                novo_evento.publicos = publicos_selecionados
+
             db.session.add(novo_evento)
             db.session.commit()
 
-            flash('Reunião criada com sucesso!', 'success')
+            flash('Evento criado com sucesso!', 'success')
             return redirect(url_for('listar_eventos'))
 
-        return render_template('eventos/novo.html')
+        publicos = Publico.query.all()
+        return render_template('eventos/novo.html', publicos=publicos)
+
     
 
     @app.route('/eventos/editar/<int:evento_id>', methods=['GET', 'POST'])
@@ -557,18 +595,24 @@ def configure_routes(app):
     def editar_evento(evento_id):
         usuario_logado = get_usuario_logado()
         evento = Evento.query.get_or_404(evento_id)
+        publicos_ids = request.form.getlist('publicos')
 
         if request.method == 'POST':
             evento.titulo = request.form['titulo']
-            evento.data_hora = request.form['data_hora']
+            evento.data_hora = datetime.strptime(request.form['data_hora'], '%Y-%m-%dT%H:%M')
             evento.local = request.form['local']
             evento.descricao = request.form['descricao']
 
-            db.session.commit()
-            flash('Reunião atualizada com sucesso!', 'success')
-            return redirect(url_for('listar_eventos'))
+            for publico_id in publicos_ids:
+                publico = Publico.query.get(publico_id)
+                novo_evento.publicos.append(publico)
 
-        return render_template('eventos/editar.html', evento=evento, usuario_logado=usuario_logado)
+            db.session.commit()
+            flash('Evento atualizado com sucesso!', 'success')
+            return redirect(url_for('listar_eventos'))
+        
+        publicos = Publico.query.all()
+        return render_template('eventos/editar.html', evento=evento, usuario_logado=usuario_logado, publicos=publicos)
     
     @app.route('/eventos/excluir/<int:evento_id>', methods=['POST'])
     @login_requerido
@@ -577,24 +621,30 @@ def configure_routes(app):
         evento = Evento.query.get_or_404(evento_id)
         db.session.delete(evento)
         db.session.commit()
-        flash('Reunião excluída com sucesso!', 'success')
+        flash('Evento excluído com sucesso!', 'success')
         return redirect(url_for('listar_eventos'))
     
 
     @app.route('/api/eventos')
-    @login_requerido
     def api_eventos():
-        eventos = Evento.query.all()
+        usuario_logado = get_usuario_logado()
 
-        lista_eventos = []
-        for e in eventos:
-            lista_eventos.append({
-                'id': e.id,
-                'title': f"Evento - {e.titulo}",
-                'start': e.data_hora.strftime('%Y-%m-%dT%H:%M:%S'),
-                'description': e.descricao,
-                'allDay': False
-            })
+        if usuario_logado.is_admin:
+            eventos = Evento.query.all()
+        else:
+            publicos_usuario = [p.id for p in usuario_logado.membro.publicos]
+            eventos = Evento.query\
+                .join(Evento.publicos)\
+                .filter(Publico.id.in_(publicos_usuario))\
+                .all()
 
-        return jsonify(eventos)
+        eventos_json = [{
+            'title': e.titulo,
+            'start': e.data_hora.isoformat(),
+            'description': e.descricao,
+            'location': e.local
+        } for e in eventos]
+
+        return jsonify(eventos_json)
+
 

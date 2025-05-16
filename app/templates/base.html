@@ -153,11 +153,11 @@
 
               <!-- Para admins e membros -->
               {% if usuario_logado and (usuario_logado.is_admin or usuario_logado.membro_id) %}
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
                     <i class="bi bi-calendar3-event me-1"></i> Reuniões
                   </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('listar_eventos') }}">
                     <i class="bi bi-bookmark-plus"></i> Eventos
