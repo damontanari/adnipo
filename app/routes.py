@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
-from app.models import Membro, Usuario, Reuniao, Evento, Publico, evento_publico_associacao
+from app.models import Membro, Usuario, Reuniao, Evento, Publico
 from datetime import datetime, timedelta
 from functools import wraps
 import qrcode
@@ -46,24 +46,6 @@ def admin_requerido(f):
 
 def configure_routes(app):
 
-    @app.route('/setup_db')
-    def setup_db():
-        db.create_all()
-
-        if not Usuario.query.filter_by(email="daniel@adnipo.com").first():
-            admin_daniel = Usuario(nome="Daniel", email="daniel@adnipo.com", is_admin=True)
-            admin_daniel.set_senha("senha123")
-            db.session.add(admin_daniel)
-
-        if not Usuario.query.filter_by(email="richard@adnipo.com").first():
-            admin_richard = Usuario(nome="Richard", email="richard@adnipo.com", is_admin=True)
-            admin_richard.set_senha("senha123")
-            db.session.add(admin_richard)
-
-        db.session.commit()
-        return "Banco de dados configurado e administradores criados!"
-
-
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
@@ -102,19 +84,30 @@ def configure_routes(app):
             flash("Você precisa estar logado para acessar o painel.")
             return redirect(url_for('login'))
 
-        # pega os ids dos públicos que ele pertence
-        ids_publicos_usuario = [p.id for p in usuario_logado.publicos]
+        if usuario_logado.is_admin:
+            eventos = Evento.query\
+                .filter(Evento.data_hora >= datetime.now())\
+                .order_by(Evento.data_hora.asc())\
+                .limit(3)\
+                .all()
+        else:
+            ids_publicos_usuario = [p.id for p in usuario_logado.membro.publicos] if usuario_logado.membro else []
+            eventos = Evento.query\
+                .join(Evento.publicos)\
+                .filter(Publico.id.in_(ids_publicos_usuario))\
+                .filter(Evento.data_hora >= datetime.now())\
+                .order_by(Evento.data_hora.asc())\
+                .limit(3)\
+                .all()
 
-        # pega os eventos que tenham algum desses públicos e que ainda vão acontecer
-        eventos = Evento.query\
-            .join(evento_publico_associacao)\
-            .filter(evento_publico_associacao.c.publico_id.in_(ids_publicos_usuario))\
-            .filter(Evento.data_hora >= datetime.now())\
-            .order_by(Evento.data_hora.asc())\
+        print(eventos)
+
+        reunioes = Reuniao.query\
+            .filter(Reuniao.data_hora >= datetime.now())\
+            .order_by(Reuniao.data_hora.asc())\
             .limit(3)\
             .all()
-
-        reunioes = Reuniao.query.filter(Reuniao.data_hora >= datetime.now()).order_by(Reuniao.data_hora.asc()).limit(3).all()
+            
         publicos = Publico.query.all()
 
         return render_template(
@@ -122,7 +115,7 @@ def configure_routes(app):
             usuario_logado=usuario_logado,
             reuniao=reunioes,
             timedelta=timedelta,
-            evento=eventos,
+            eventos=eventos,
             publicos=publicos
         )
 
@@ -630,13 +623,16 @@ def configure_routes(app):
         usuario_logado = get_usuario_logado()
 
         if usuario_logado.is_admin:
-            eventos = Evento.query.all()
-        else:
+            eventos = Evento.query.order_by(Evento.data_hora.asc()).all()
+        elif usuario_logado.membro:
             publicos_usuario = [p.id for p in usuario_logado.membro.publicos]
             eventos = Evento.query\
                 .join(Evento.publicos)\
                 .filter(Publico.id.in_(publicos_usuario))\
+                .order_by(Evento.data_hora.asc())\
                 .all()
+        else:
+            eventos = []
 
         eventos_json = [{
             'title': e.titulo,

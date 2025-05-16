@@ -125,5 +125,8 @@ class Publico(db.Model):
     nome = db.Column(db.String(100), nullable=False, unique=True)
     eventos = db.relationship('Evento', secondary=evento_publico_associacao, back_populates='publicos')
     usuarios = db.relationship('Usuario', secondary=usuario_publico_associacao, back_populates='publicos')
+    
+    def __repr__(self):
+        return f"<Publico {self.nome}>"
 
 
