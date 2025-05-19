@@ -134,5 +134,30 @@ class Publico(db.Model):
     
     def __repr__(self):
         return f"<Publico {self.nome}>"
+    
+
+class Recado(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(100), nullable=False)
+    conteudo = db.Column(db.Text, nullable=False)
+    data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    publico_id = db.Column(db.Integer, db.ForeignKey('publico.id'), nullable=True)  # opcional: recado pode ser para um público ou para todos
+
+    criador = db.relationship('Usuario', backref='recados')
+    publico = db.relationship('Publico', backref='recados')
+
+    def __repr__(self):
+        return f"<Recado {self.titulo}>"
+    
+class RecadoLeitura(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    recado_id = db.Column(db.Integer, db.ForeignKey('recado.id'))
+    data_leitura = db.Column(db.DateTime, default=datetime.utcnow)
+
+    usuario = db.relationship('Usuario', backref='recados_lidos')
+    recado = db.relationship('Recado', backref='leituras')
+
 
 

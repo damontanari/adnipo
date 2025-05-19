@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
-from app.models import Membro, Usuario, Reuniao, Evento, Publico
+from app.models import Membro, Usuario, Reuniao, Evento, Publico, Recado, RecadoLeitura
 from datetime import datetime, timedelta
 from functools import wraps
 import qrcode
@@ -44,6 +44,7 @@ def admin_requerido(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 def configure_routes(app):
 
     @app.route('/login', methods=['GET', 'POST'])
@@ -79,6 +80,7 @@ def configure_routes(app):
     @app.route('/admin')
     def admin_home():
         usuario_logado = get_usuario_logado()
+        eventos = Evento.query.order_by(Evento.data_hora.asc()).all()
 
         if not usuario_logado:
             flash("Você precisa estar logado para acessar o painel.")
@@ -91,10 +93,7 @@ def configure_routes(app):
                 .limit(3)\
                 .all()
         else:
-            ids_publicos_usuario = [p.id for p in usuario_logado.membro.publicos] if usuario_logado.membro else []
             eventos = Evento.query\
-                .join(Evento.publicos)\
-                .filter(Publico.id.in_(ids_publicos_usuario))\
                 .filter(Evento.data_hora >= datetime.now())\
                 .order_by(Evento.data_hora.asc())\
                 .limit(3)\
@@ -644,3 +643,121 @@ def configure_routes(app):
         return jsonify(eventos_json)
 
 
+
+    ## Recados
+
+    @app.route('/recados')
+    @login_requerido
+    def listar_recados():
+        usuario_logado = get_usuario_logado()
+
+        if usuario_logado.is_admin:
+            recados = Recado.query.order_by(Recado.data_criacao.desc()).all()
+        else:
+            ids_publicos_usuario = [p.id for p in usuario_logado.membro.publicos] if usuario_logado.membro else []
+            recados = Recado.query.filter(
+                (Recado.publico_id.in_(ids_publicos_usuario)) | (Recado.publico_id.is_(None))
+            ).order_by(Recado.data_criacao.desc()).all()
+
+        return render_template('recados/lista.html', recados=recados)
+
+
+    @app.route('/recados/novo', methods=['GET', 'POST'])
+    @login_requerido
+    @admin_requerido
+    def novo_recado():
+        if request.method == 'POST':
+            titulo = request.form['titulo']
+            conteudo = request.form['conteudo']
+            publico_id = request.form.get('publico_id')  # pode ser None para recado geral
+
+            novo_recado = Recado(
+                titulo=titulo,
+                conteudo=conteudo,
+                criador_id=session.get('usuario_id'),
+                publico_id=publico_id if publico_id else None
+            )
+
+            db.session.add(novo_recado)
+            db.session.commit()
+
+            flash('Recado criado com sucesso!', 'success')
+            return redirect(url_for('listar_recados'))
+
+        publicos = Publico.query.all()
+        return render_template('recados/novo.html', publicos=publicos)
+    
+
+    @app.route('/recados/editar/<int:recado_id>', methods=['GET', 'POST'])
+    @login_requerido
+    @admin_requerido
+    def editar_recado(recado_id):
+        usuario_logado = get_usuario_logado()
+        recado = Recado.query.get_or_404(recado_id)
+
+        if request.method == 'POST':
+            recado.titulo = request.form['titulo']
+            recado.conteudo = request.form['conteudo']
+            publico_id = request.form.get('publico_id') or None  # permite valor vazio = None
+            recado.publico_id = publico_id
+
+            db.session.commit()
+            flash('Recado atualizado com sucesso!', 'success')
+            return redirect(url_for('listar_recados'))
+        
+        publicos = Publico.query.all()
+        return render_template('recados/editar.html', recado=recado, usuario_logado=usuario_logado, publicos=publicos)
+
+
+    @app.route('/recados/excluir/<int:recado_id>', methods=['POST'])
+    @login_requerido
+    @admin_requerido
+    def excluir_recado(recado_id):
+        recado = Recado.query.get_or_404(recado_id)
+        db.session.delete(recado)
+        db.session.commit()
+        flash('Recado excluído com sucesso!', 'success')
+        return redirect(url_for('listar_recados'))
+    
+
+    @app.route('/api/recados')
+    @login_requerido
+    def api_recados():
+        usuario_logado = get_usuario_logado()
+
+        if usuario_logado.is_admin:
+            recados = Recado.query.order_by(Recado.data_criacao.desc()).all()
+        elif usuario_logado.membro:
+            publicos_usuario = [p.id for p in usuario_logado.membro.publicos]
+            recados = Recado.query.filter(
+                (Recado.publico_id == None) | (Recado.publico_id.in_(publicos_usuario))
+            ).order_by(Recado.data_criacao.desc()).all()
+        else:
+            recados = []
+
+        recados_json = [{
+            'titulo': r.titulo,
+            'conteudo': r.conteudo,
+            'data_criacao': r.data_criacao.isoformat() if r.data_criacao else None
+        } for r in recados]
+
+        return jsonify(recados_json)
+    
+    def get_recados_nao_lidos(usuario):
+        if not usuario:
+            return []
+
+        recados_visiveis = get_recados_para_usuario(usuario)
+        recados_lidos_ids = [leitura.recado_id for leitura in usuario.recados_lidos]
+
+        recados_nao_lidos = [
+            recado for recado in recados_visiveis if recado.id not in recados_lidos_ids
+        ]
+
+        return recados_nao_lidos
+
+    @app.context_processor
+    def inject_usuario_e_recados():
+        usuario_logado = get_usuario_logado()
+        novos_recados = len(get_recados_nao_lidos(usuario_logado)) if usuario_logado else 0
+        return dict(usuario_logado=usuario_logado, novos_recados=novos_recados)
