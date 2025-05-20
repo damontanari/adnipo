@@ -55,6 +55,7 @@ def configure_routes(app):
     def inject_usuario_e_recados():
         usuario_logado = get_usuario_logado()
         novos_recados = len(get_recados_nao_lidos(usuario_logado)) if usuario_logado else 0
+        print(f"teste",novos_recados)
         return dict(usuario_logado=usuario_logado, novos_recados=novos_recados)
 
 
@@ -92,6 +93,7 @@ def configure_routes(app):
     def admin_home():
         usuario_logado = get_usuario_logado()
         eventos = Evento.query.order_by(Evento.data_hora.asc()).all()
+        recados = Recado.query.order_by(Recado.data_criacao.asc()).all()
 
         if not usuario_logado:
             flash("Você precisa estar logado para acessar o painel.")
@@ -112,6 +114,21 @@ def configure_routes(app):
 
         print(eventos)
 
+        if usuario_logado.is_admin:
+            recados = Recado.query\
+                .filter(Recado.data_criacao >= datetime.now())\
+                .order_by(Recado.data_criacao.asc())\
+                .limit(3)\
+                .all()
+        else:
+            recados = Recado.query\
+                .filter(Recado.data_criacao >= datetime.now())\
+                .order_by(Recado.data_criacao.asc())\
+                .limit(3)\
+                .all()
+
+        print(recados)
+
         reunioes = Reuniao.query\
             .filter(Reuniao.data_hora >= datetime.now())\
             .order_by(Reuniao.data_hora.asc())\
@@ -126,6 +143,7 @@ def configure_routes(app):
             reuniao=reunioes,
             timedelta=timedelta,
             eventos=eventos,
+            recados=recados,
             publicos=publicos
         )
 
@@ -590,7 +608,6 @@ def configure_routes(app):
         publicos = Publico.query.all()
         return render_template('eventos/novo.html', publicos=publicos)
 
-    
 
     @app.route('/eventos/editar/<int:evento_id>', methods=['GET', 'POST'])
     @login_requerido
@@ -655,10 +672,37 @@ def configure_routes(app):
     
 
     ## Recados
+
+    @app.route('/recados')
+    @login_requerido
+    def listar_recados():
+        usuario_logado = get_usuario_logado()
+
+        if usuario_logado:
+            print(usuario_logado, usuario_logado.is_admin)
+        else:
+            print("Nenhum usuário logado.")
+
+        # Se for admin, vê todos. Se for membro, filtra
+        if usuario_logado.is_admin:
+            recados_para_mim = Recado.query.order_by(Recado.data_criacao.asc()).all()
+        else:
+            oficio_usuario = usuario_logado.membro.oficio if usuario_logado.membro else None
+
+            recados_para_mim = Recado.query.join(Recado.publicos).filter(
+                (Publico.nome == 'Todos') |
+                (Publico.nome == oficio_usuario)
+            ).order_by(Recado.data_criacao.asc()).all()
+
+        proximo_recado = Recado.query.filter(Recado.data_criacao >= datetime.now()).order_by(Recado.data_criacao.asc()).first()
+
+        return render_template('recados/lista.html', recados=recados_para_mim, usuario_logado=usuario_logado)
+    
+
     @app.route('/recados/novo', methods=['GET', 'POST'])
     @login_requerido
     @admin_requerido
-    def nova_recado():
+    def novo_recado():
         if request.method == 'POST':
             titulo = request.form.get('titulo')
             descricao = request.form.get('descricao')
@@ -716,8 +760,7 @@ def configure_routes(app):
             recado.lido_por.append(usuario)
             db.session.commit()
 
-        return render_template('recados/ver.html', recado=recado)
-
+        return render_template('recados/ver.html', recado=recado, usuario_logado=usuario)
 
 
     @app.route('/api/recados')

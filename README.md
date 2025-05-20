@@ -93,6 +93,9 @@ create-db:
 drop-db:
 	flask drop_db
 
+create-publicos:
+  flask create_publicos
+
 create-admin:
 	flask create_admin admin@admin.com 123456
 
@@ -106,6 +109,7 @@ docker compose up -d --build
 docker compose exec flask_app flask create_db
 docker compose exec flask_app flask drop_db
 docker compose exec flask_app flask create_admin "Administrador" "admin@adnipo.com.br" "admin"
+docker compose exec flask_app flask create_publicos
 docker compose exec flask_app flask reset_db "Administrador" "admin@adnipo.com.br" "senha"
 
 

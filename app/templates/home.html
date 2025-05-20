@@ -40,6 +40,16 @@
           </div>
         </div>
       </div>
+
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">📝 Novo Recado</h5>
+            <p class="card-text">Adicione um novo recado para os membros.</p>
+            <a href="{{ url_for('novo_recado') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
+          </div>
+        </div>
+      </div>
       <!-- <div class="col-md-6 mb-4">
         <div class="card shadow-sm border-0">
           <div class="card-body">
@@ -73,16 +83,16 @@
       </div>
     {% endif %}
 
-    <!-- Card de reuniões -->
-    <!-- <div class="col-md-6 mb-4">
+    <!-- Card de recados -->
+    <div class="col-md-6 mb-4">
       <div class="card shadow-sm border-0">
         <div class="card-body">
-          <h5 class="card-title">📅 Visualizar Reuniões</h5>
-          <p class="card-text">Confira as próximas e reuniões passadas.</p>
-          <a href="{{ url_for('listar_reunioes') }}" class="btn btn-adnipo btn-sm">Ver Reuniões</a>
+          <h5 class="card-title">📝 Visualizar Recados</h5>
+          <p class="card-text">Confira os recados cadastrados.</p>
+          <a href="{{ url_for('listar_recados') }}" class="btn btn-adnipo btn-sm">Ver Recados</a>
         </div>
       </div>
-    </div> -->
+    </div>
 
     <!-- Card de eventos -->
     <div class="col-md-6 mb-4">

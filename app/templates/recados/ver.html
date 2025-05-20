@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ recado.titulo }}</h1>
+    <p>{{ recado.descricao }}</p>
+    <hr>
+    <h6>Público:</h6>
+    {% for p in recado.publicos %}
+        <span class="badge bg-secondary">{{ p.nome }}</span>
+    {% else %}
+        <span class="text-muted">Todos</span>
+    {% endfor %}
+
+    <div class="mt-3">
+        <a href="{{ url_for('listar_recados') }}" class="btn btn-secondary">Voltar para a lista</a>
+    </div>
+</div>
+{% endblock %}
