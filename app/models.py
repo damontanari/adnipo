@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 # Tabela de associação Evento ↔ Publico
 evento_publico_associacao = db.Table('evento_publico_associacao',
     db.Column('evento_id', db.Integer, db.ForeignKey('evento.id'), primary_key=True),
+    db.Column('recado_id', db.Integer, db.ForeignKey('recado.id'), primary_key=True),
     db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
 )
 
