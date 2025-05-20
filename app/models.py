@@ -20,6 +20,10 @@ membro_publico = db.Table('membro_publico',
     db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
 )
 
+recados_lidos = db.Table('recados_lidos',
+    db.Column('recado_id', db.Integer, db.ForeignKey('recado.id'), primary_key=True),
+    db.Column('usuario_id', db.Integer, db.ForeignKey('usuario.id'), primary_key=True)
+)
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -136,28 +140,18 @@ class Publico(db.Model):
         return f"<Publico {self.nome}>"
     
 
+# Adicionar relacionamento na classe Recado:
 class Recado(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(100), nullable=False)
-    conteudo = db.Column(db.Text, nullable=False)
+    titulo = db.Column(db.String(200), nullable=False)
+    descricao = db.Column(db.Text, nullable=True)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    publico_id = db.Column(db.Integer, db.ForeignKey('publico.id'), nullable=True)  # opcional: recado pode ser para um público ou para todos
-
-    criador = db.relationship('Usuario', backref='recados')
-    publico = db.relationship('Publico', backref='recados')
+    publicos = db.relationship('Publico', secondary=evento_publico_associacao, back_populates='eventos')
+    lido_por = db.relationship('Usuario', secondary=recados_lidos, backref='recados_lidos')
 
     def __repr__(self):
         return f"<Recado {self.titulo}>"
     
-class RecadoLeitura(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    recado_id = db.Column(db.Integer, db.ForeignKey('recado.id'))
-    data_leitura = db.Column(db.DateTime, default=datetime.utcnow)
-
-    usuario = db.relationship('Usuario', backref='recados_lidos')
-    recado = db.relationship('Recado', backref='leituras')
-
 
 
