@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 # Tabela de associação Evento ↔ Publico
 evento_publico_associacao = db.Table('evento_publico_associacao',
     db.Column('evento_id', db.Integer, db.ForeignKey('evento.id'), primary_key=True),
-    db.Column('recado_id', db.Integer, db.ForeignKey('recado.id'), primary_key=True),
     db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
 )
 
@@ -18,6 +17,11 @@ usuario_publico_associacao = db.Table('usuario_publico_associacao',
 
 membro_publico = db.Table('membro_publico',
     db.Column('membro_id', db.Integer, db.ForeignKey('membro.id'), primary_key=True),
+    db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
+)
+
+recado_publico_associacao = db.Table('recado_publico_associacao',
+    db.Column('recado_id', db.Integer, db.ForeignKey('recado.id'), primary_key=True),
     db.Column('publico_id', db.Integer, db.ForeignKey('publico.id'), primary_key=True)
 )
 
@@ -148,7 +152,7 @@ class Recado(db.Model):
     descricao = db.Column(db.Text, nullable=True)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-    publicos = db.relationship('Publico', secondary=evento_publico_associacao, back_populates='eventos')
+    publicos = db.relationship('Publico', secondary=recado_publico_associacao, backref='recados')
     lido_por = db.relationship('Usuario', secondary=recados_lidos, backref='recados_lidos')
 
     def __repr__(self):
