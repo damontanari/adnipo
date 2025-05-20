@@ -106,6 +106,6 @@ docker compose up -d --build
 docker compose exec flask_app flask create_db
 docker compose exec flask_app flask drop_db
 docker compose exec flask_app flask create_admin "Administrador" "admin@adnipo.com.br" "admin"
-docker compose exec flask_app flask reset_db "Administrador" "admin@email.com" "senha"
+docker compose exec flask_app flask reset_db "Administrador" "admin@adnipo.com.br" "senha"
 
 
