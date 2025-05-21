@@ -179,8 +179,8 @@
                       {% for recado in recados %}
                         <li>
                           <a class="dropdown-item" href="{{ url_for('ver_recado', recado_id=recado.id) }}">
-                            {{ recado.titulo }} <br>
-                            <small class="text-muted">{{ recado.descricao[:25] }}</small>
+                            {{ recado.titulo[:15] }} <br>
+                            <small class="text-muted">{{ recado.descricao[:10] }}</small>
                           </a>
                         </li>
                       {% endfor %}
