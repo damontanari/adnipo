@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container text-center">
+  <h2>Faça sua Oferta ou Dízimo</h2>
+  <p class="lead">Use a chave Pix abaixo ou escaneie o QR Code para contribuir:</p>
+
+  <div class="mb-3">
+    <h4>🔑 {{ chave_pix }}</h4>
+    <button class="btn btn-adnipo mt-2" onclick="copiarChave()">Copiar Chave</button>
+  </div>
+
+  <div class="mb-4">
+    <img src="{{ qr_code_url }}" alt="QR Code Pix" class="img-fluid" style="max-width: 250px;">
+  </div>
+
+  <p class="text-muted">Deus te abençoe pela sua generosidade ❤️</p>
+  <a href="{{ url_for('admin_home') }}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Voltar
+  </a>
+</div>
+
+<script>
+  function copiarChave() {
+    navigator.clipboard.writeText("{{ chave_pix }}");
+    alert("Chave Pix copiada!");
+  }
+</script>
+{% endblock %}

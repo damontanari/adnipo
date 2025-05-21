@@ -153,11 +153,11 @@
 
               <!-- Para admins e membros -->
               {% if usuario_logado and (usuario_logado.is_admin or usuario_logado.membro_id) %}
-                <!-- <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('listar_reunioes') }}">
-                    <i class="bi bi-calendar3-event me-1"></i> Reuniões
-                  </a>
-                </li> -->
+
+              <li class="nav-item">
+                <a class="nav-link bi bi-cash-stack" href="{{ url_for('oferta_pix') }}"> Ofertar / Dizimar</a>
+              </li>
+
                 
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('listar_eventos') }}">
@@ -165,17 +165,43 @@
                   </a>
                 </li>
 
-                <li class="nav-item dropdown">
-                  <a class="nav-link position-relative" href="{{ url_for('listar_recados') }}">
-                    🔔
+                <li class="nav-item dropdown"> 
+                  <a class="nav-link dropdown-toggle bi bi-bell-fill" href="#" data-bs-toggle="dropdown" aria-expanded="true">
                     {% if novos_recados > 0 %}
-                      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                      <span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">
                         {{ novos_recados }}
                       </span>
                     {% endif %}
                   </a>
+
+                  <ul class="dropdown-menu" data-bs-popper="static">
+                    {% if recados %}
+                      {% for recado in recados %}
+                        <li>
+                          <a class="dropdown-item" href="{{ url_for('ver_recado', recado_id=recado.id) }}">
+                            {{ recado.titulo }} <br>
+                            <small class="text-muted">{{ recado.descricao[:25] }}</small>
+                          </a>
+                        </li>
+                      {% endfor %}
+                    {% else %}
+                      <li><p class="dropdown-item">Não há recados...</p></li>
+                    {% endif %}
+
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <a class="dropdown-item btn btn-link text-adnipo" href="{{ url_for('listar_recados') }}">Ver todos</a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <form action="{{ url_for('limpar_recados') }}" method="POST" style="display: inline;">
+                        <button type="submit" class="dropdown-item text-danger">Limpar notificações</button>
+                      </form>
+                    </li>
+
+                  </ul>
                 </li>
-              {% endif %}
+                {% endif %}
 
               <!-- Menu de perfil -->
               {% if usuario_logado %}

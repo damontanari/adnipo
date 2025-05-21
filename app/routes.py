@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
-from app.models import Membro, Usuario, Reuniao, Evento, Publico, Recado
+from app.models import Membro, Usuario, Evento, Publico, Recado
 from datetime import datetime, timedelta
 from functools import wraps
 import qrcode
@@ -52,11 +52,25 @@ def admin_requerido(f):
 def configure_routes(app):
 
     @app.context_processor
-    def inject_usuario_e_recados():
+    def carregar_recados_nao_lidos():
         usuario_logado = get_usuario_logado()
-        novos_recados = len(get_recados_nao_lidos(usuario_logado)) if usuario_logado else 0
-        print(f"teste",novos_recados)
-        return dict(usuario_logado=usuario_logado, novos_recados=novos_recados)
+        if not usuario_logado:
+            return dict(novos_recados=0, recados=[])
+        
+        if usuario_logado.is_admin:
+            # Para admins, pegar todos recados que não foram lidos
+            recados_pendentes = Recado.query.filter(~Recado.lido_por.any(id=usuario_logado.id)) \
+                .order_by(Recado.data_criacao.desc()).limit(5).all()
+        else:
+            oficio_usuario = usuario_logado.membro.oficio if usuario_logado.membro else None
+
+            recados_pendentes = Recado.query.join(Recado.publicos).filter(
+                ((Publico.nome == 'Todos') | (Publico.nome == oficio_usuario)) &
+                (~Recado.lido_por.any(id=usuario_logado.id))
+            ).order_by(Recado.data_criacao.desc()).limit(5).all()
+
+        return dict(novos_recados=len(recados_pendentes), recados=recados_pendentes)
+
 
 
     @app.route('/login', methods=['GET', 'POST'])
@@ -128,19 +142,12 @@ def configure_routes(app):
                 .all()
 
         print(recados)
-
-        reunioes = Reuniao.query\
-            .filter(Reuniao.data_hora >= datetime.now())\
-            .order_by(Reuniao.data_hora.asc())\
-            .limit(3)\
-            .all()
             
         publicos = Publico.query.all()
 
         return render_template(
             'home.html',
             usuario_logado=usuario_logado,
-            reuniao=reunioes,
             timedelta=timedelta,
             eventos=eventos,
             recados=recados,
@@ -455,94 +462,6 @@ def configure_routes(app):
         return send_file(output, download_name='membros_completo.xlsx', as_attachment=True)
 
 
-    ## Reuniões
-    @app.route('/reunioes')
-    @login_requerido
-    def listar_reunioes():
-        usuario_logado = get_usuario_logado()
-        if usuario_logado:
-            print(usuario_logado, usuario_logado.is_admin)
-        else:
-            print("Nenhum usuário logado.")
-
-        reunioes = Reuniao.query.order_by(Reuniao.data_hora.asc()).all()
-        proxima_reuniao = Reuniao.query.filter(Reuniao.data_hora >= datetime.now()).order_by(Reuniao.data_hora.asc()).first()
-        return render_template('reunioes/lista.html', reunioes=reunioes, usuario_logado=usuario_logado)
-
-    @app.route('/reunioes/nova', methods=['GET', 'POST'])
-    @login_requerido
-    @admin_requerido
-    def nova_reuniao():
-        if request.method == 'POST':
-            titulo = request.form.get('titulo')
-            data_hora_str = request.form.get('data_hora')
-            local = request.form.get('local')
-            descricao = request.form.get('descricao')
-
-            data_hora = datetime.strptime(data_hora_str, '%Y-%m-%dT%H:%M')  # campo tipo datetime-local no form
-
-            nova_reuniao = Reuniao(
-                titulo=titulo,
-                data_hora=data_hora,
-                local=local,
-                descricao=descricao,
-                criador_id=session.get('usuario_id')
-            )
-
-            db.session.add(nova_reuniao)
-            db.session.commit()
-
-            flash('Reunião criada com sucesso!', 'success')
-            return redirect(url_for('listar_reunioes'))
-
-        return render_template('reunioes/nova.html')
-
-    @app.route('/reunioes/editar/<int:reuniao_id>', methods=['GET', 'POST'])
-    @login_requerido
-    @admin_requerido
-    def editar_reuniao(reuniao_id):
-        usuario_logado = get_usuario_logado()
-        reuniao = Reuniao.query.get_or_404(reuniao_id)
-
-        if request.method == 'POST':
-            reuniao.titulo = request.form['titulo']
-            reuniao.data_hora = request.form['data_hora']
-            reuniao.local = request.form['local']
-            reuniao.descricao = request.form['descricao']
-
-            db.session.commit()
-            flash('Reunião atualizada com sucesso!', 'success')
-            return redirect(url_for('listar_reunioes'))
-
-        return render_template('reunioes/editar.html', reuniao=reuniao, usuario_logado=usuario_logado)
-
-    @app.route('/reunioes/excluir/<int:reuniao_id>', methods=['POST'])
-    @login_requerido
-    @admin_requerido
-    def excluir_reuniao(reuniao_id):
-        reuniao = Reuniao.query.get_or_404(reuniao_id)
-        db.session.delete(reuniao)
-        db.session.commit()
-        flash('Reunião excluída com sucesso!', 'success')
-        return redirect(url_for('listar_reunioes'))
-
-
-    @app.route('/api/reunioes')
-    @login_requerido
-    def api_reunioes():
-        reunioes = Reuniao.query.all()
-
-        eventos = []
-        for r in reunioes:
-            eventos.append({
-                'id': r.id,
-                'title': f"Reunião - {r.titulo}",
-                'start': r.data_hora.strftime('%Y-%m-%dT%H:%M:%S'),
-                'description': r.descricao,
-                'allDay': False
-            })
-
-        return jsonify(eventos)
     
 
     ## Eventos
@@ -678,34 +597,28 @@ def configure_routes(app):
     def listar_recados():
         usuario_logado = get_usuario_logado()
 
-        if usuario_logado:
-            print(usuario_logado, usuario_logado.is_admin)
-        else:
-            print("Nenhum usuário logado.")
-
-        # Se for admin, vê todos. Se for membro, filtra
         if usuario_logado.is_admin:
-            recados_para_mim = Recado.query.order_by(Recado.data_criacao.asc()).all()
+            # pega os 3 últimos recados cadastrados (mais recentes)
+            recados_para_mim = Recado.query.order_by(Recado.data_criacao.desc()).limit(3).all()
         else:
             oficio_usuario = usuario_logado.membro.oficio if usuario_logado.membro else None
 
             recados_para_mim = Recado.query.join(Recado.publicos).filter(
                 (Publico.nome == 'Todos') |
                 (Publico.nome == oficio_usuario)
-            ).order_by(Recado.data_criacao.asc()).all()
-
-        proximo_recado = Recado.query.filter(Recado.data_criacao >= datetime.now()).order_by(Recado.data_criacao.asc()).first()
+            ).order_by(Recado.data_criacao.desc()).limit(3).all()
 
         return render_template('recados/lista.html', recados=recados_para_mim, usuario_logado=usuario_logado)
-    
+
 
     @app.route('/recados/novo', methods=['GET', 'POST'])
     @login_requerido
     @admin_requerido
     def novo_recado():
         if request.method == 'POST':
-            titulo = request.form.get('titulo')
-            descricao = request.form.get('descricao')
+            titulo = request.form['titulo']
+            descricao = request.form['descricao']
+            publicos_ids = request.form.getlist('publicos')
 
             novo_recado = Recado(
                 titulo=titulo,
@@ -713,13 +626,22 @@ def configure_routes(app):
                 criador_id=session.get('usuario_id')
             )
 
+            # agora associa os públicos selecionados
+            if 'Todos' in publicos_ids:
+                todos_publicos = Publico.query.all()
+                novo_recado.publicos = todos_publicos
+            else:
+                publicos_selecionados = Publico.query.filter(Publico.id.in_(publicos_ids)).all()
+                novo_recado.publicos = publicos_selecionados
+
             db.session.add(novo_recado)
             db.session.commit()
 
-            flash('Recado criado com sucesso!', 'success')
+            flash('Evento criado com sucesso!', 'success')
             return redirect(url_for('listar_recados'))
 
-        return render_template('recados/novo.html')
+        publicos = Publico.query.all()
+        return render_template('recados/novo.html', publicos=publicos)
 
 
     @app.route('/recados/editar/<int:recado_id>', methods=['GET', 'POST'])
@@ -749,7 +671,8 @@ def configure_routes(app):
         db.session.commit()
         flash('Recado excluído com sucesso!', 'success')
         return redirect(url_for('listar_recados'))
-    
+
+
     @app.route('/recados/ver/<int:recado_id>')
     @login_requerido
     def ver_recado(recado_id):
@@ -761,6 +684,22 @@ def configure_routes(app):
             db.session.commit()
 
         return render_template('recados/ver.html', recado=recado, usuario_logado=usuario)
+    
+    @app.route('/recados/limpar', methods=['POST'])
+    @login_requerido
+    def limpar_recados():
+        usuario = get_usuario_logado()
+
+        # pega todos os recados não lidos pra esse usuário
+        recados_nao_lidos = Recado.query.filter(~Recado.lido_por.any(id=usuario.id)).all()
+
+        for recado in recados_nao_lidos:
+            recado.lido_por.append(usuario)
+
+        db.session.commit()
+        flash('Notificações limpas!', 'success')
+        return redirect(request.referrer or url_for('listar_recados'))
+
 
 
     @app.route('/api/recados')
@@ -768,13 +707,26 @@ def configure_routes(app):
     def api_recados():
         recados = Recado.query.all()
 
-        eventos = []
+        list_recados = []
         for r in recados:
-            eventos.append({
+            list_recados.append({
                 'id': r.id,
-                'title': f"Reunião - {r.titulo}",
+                'title': f"Recado - {r.titulo}",
                 'description': r.descricao,
                 'allDay': False
             })
 
-        return jsonify(eventos)
+        return jsonify(list_recados)
+    
+
+    # Oferta/Dizimos
+    @app.route('/oferta')
+    @login_requerido
+    def oferta_pix():
+        usuario = get_usuario_logado()
+
+        # se quiser futuramente puxar a chave via config de banco:
+        chave_pix = '00020126360014BR.GOV.BCB.PIX0114068138600001205204000053039865802BR5901N6001C62100506ADNIPO6304FE4F'  # ou email/celular/chave aleatória
+        qr_code_url = url_for('static', filename='img/qrcode-pix.png')
+
+        return render_template('ofertas/pix.html', chave_pix=chave_pix, qr_code_url=qr_code_url, usuario_logado=usuario)

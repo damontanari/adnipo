@@ -18,18 +18,19 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="conteudo" class="form-label">Conteúdo</label>
-                    <textarea class="form-control" id="conteudo" name="conteudo" rows="4" required></textarea>
+                    <label for="descricao" class="form-label">Descrição</label>
+                    <textarea class="form-control" id="descricao" name="descricao" rows="4" required></textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label for="publico_id" class="form-label">Público (opcional)</label>
-                    <select class="form-select" id="publico_id" name="publico_id">
-                        <option value="">Todos os públicos</option>
-                        {% for publico in publicos %}
-                        <option value="{{ publico.id }}">{{ publico.nome }}</option>
-                        {% endfor %}
-                    </select>
+                <label for="publicos" class="form-label">Para quem é esse recado?</label>
+                <select class="form-select" id="publicos" name="publicos" required multiple>
+                    <!-- <option value="">Selecione</option> -->
+                    {% for publico in publicos %}
+                    <option value="{{ publico.id }}">{{ publico.nome }}</option>
+                    {% endfor %}
+                </select>
+                <small class="form-text text-muted">Segure Ctrl (ou Command) para selecionar vários.</small>
                 </div>
 
             </div>
