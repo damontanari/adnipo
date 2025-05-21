@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
-from app.models import Membro, Usuario, Evento, Publico, Recado
+from app.models import Membro, Usuario, Evento, Publico, Recado, Presenca
 from datetime import datetime, timedelta
 from functools import wraps
 import qrcode
@@ -392,18 +392,17 @@ def configure_routes(app):
     @login_requerido
     def carteirinha_membro(membro_id):
         membro = Membro.query.get_or_404(membro_id)
-        data_para_qr = f"https://7e75-189-113-26-36.ngrok-free.app/membro/{membro.id}"
+        # Usar a rota de checkin para o QR code:
+        data_para_qr = url_for('checkin_presenca', membro_id=membro.id, _external=True)
 
-        # Gerar o QR code
         qr = qrcode.make(data_para_qr)
         img_io = BytesIO()
         qr.save(img_io, 'PNG')
         img_io.seek(0)
 
-        # Converter imagem para base64
         qr_base64 = base64.b64encode(img_io.getvalue()).decode()
-
         return render_template('membros/carteirinha.html', membro=membro, qr_code=qr_base64)
+
 
 
     # 👉 API JSON de membros ordenada por nome
@@ -730,3 +729,52 @@ def configure_routes(app):
         qr_code_url = url_for('static', filename='img/qrcode-pix.png')
 
         return render_template('ofertas/pix.html', chave_pix=chave_pix, qr_code_url=qr_code_url, usuario_logado=usuario)
+
+
+    ## Prensença Membro
+    @app.route('/presenca/scanner')
+    @login_requerido  # para garantir que só admin logado acesse
+    @admin_requerido
+    def presenca_scanner():
+        evento = Evento.query.filter_by(ativo=True).first()
+        if not evento:
+            flash("Nenhum evento ativo no momento!", "warning")
+            return redirect(url_for('admin_home'))
+        return render_template('presenca/scanner.html', evento=evento)
+    
+
+    @app.route('/presenca/checkin/<int:membro_id>')
+    @login_requerido
+    @admin_requerido
+    def checkin_presenca(membro_id):
+        evento = Evento.query.filter_by(ativo=True).first()
+        if not evento:
+            return "Nenhum evento ativo no momento.", 404
+
+        membro = Membro.query.get_or_404(membro_id)
+
+        presenca_existente = Presenca.query.filter_by(membro_id=membro.id, evento_id=evento.id).first()
+        if presenca_existente:
+            return f"{membro.nome} já registrou presença neste evento."
+
+        nova_presenca = Presenca(membro_id=membro.id, evento_id=evento.id)
+        db.session.add(nova_presenca)
+        db.session.commit()
+
+        return f"Presença registrada para {membro.nome} no evento {evento.titulo}."
+    
+
+    @app.route('/eventos/ativar/<int:evento_id>', methods=['POST'])
+    @login_requerido
+    @admin_requerido
+    def ativar_evento(evento_id):
+        # Desativa todos os eventos
+        Evento.query.update({Evento.ativo: False})
+        # Ativa o evento escolhido
+        evento = Evento.query.get_or_404(evento_id)
+        evento.ativo = True
+        db.session.commit()
+        flash(f"Evento '{evento.titulo}' ativado com sucesso!", "success")
+        return redirect(url_for('listar_eventos'))
+
+

@@ -54,6 +54,17 @@
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
+                                    {% if e.ativo %}
+                                    <button type="button" class="btn btn-success btn-sm" disabled data-bs-toggle="tooltip" title="Evento ativo">
+                                        <i class="fas fa-check-circle"></i> Ativo
+                                    </button>
+                                    {% else %}
+                                    <form action="{{ url_for('ativar_evento', evento_id=e.id) }}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Ativar este evento">
+                                            <i class="fas fa-toggle-on"></i> Ativar
+                                        </button>
+                                    </form>
+                                    {% endif %}
                                 </div>
                             </td>
                             {% endif %}

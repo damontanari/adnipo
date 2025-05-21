@@ -130,6 +130,7 @@ class Evento(db.Model):
     descricao = db.Column(db.Text, nullable=True)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    ativo = db.Column(db.Boolean, default=False)  # <-- novo campo para ativar o evento
     publicos = db.relationship('Publico', secondary=evento_publico_associacao, back_populates='eventos')
 
     def __repr__(self):
@@ -158,5 +159,15 @@ class Recado(db.Model):
     def __repr__(self):
         return f"<Recado {self.titulo}>"
     
+
+class Presenca(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    membro_id = db.Column(db.Integer, db.ForeignKey('membro.id'))
+    evento_id = db.Column(db.Integer, db.ForeignKey('evento.id'))
+    data_hora = db.Column(db.DateTime, default=datetime.utcnow)
+
+    membro = db.relationship('Membro', backref='presencas')
+    evento = db.relationship('Evento', backref='presencas')
+
 
 
