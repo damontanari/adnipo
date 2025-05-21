@@ -6,8 +6,14 @@
   <p class="lead">Use a chave Pix abaixo ou escaneie o QR Code para contribuir:</p>
 
   <div class="mb-3">
-    <h4>🔑 {{ chave_pix }}</h4>
-    <button class="btn btn-adnipo mt-2" onclick="copiarChave()">Copiar Chave</button>
+    <h4 class="mt-4">🔑</h4>
+    <div class="d-inline-block p-3 bg-light rounded" style="font-family: monospace; word-break: break-all; max-width: 90%; text-align: left;">
+      {% for i in range(0, chave_pix|length, 5) %}
+        {{ chave_pix[i:i+5] }}{% if not loop.last %} {% endif %}
+      {% endfor %}
+    </div>
+    <br>
+    <button class="btn btn-adnipo mt-3" onclick="copiarChave()">Copiar Chave</button>
   </div>
 
   <div class="mb-4">
