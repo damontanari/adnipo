@@ -2,172 +2,242 @@
 {% block title %}Adnipo - Editar Membro{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="mb-0">✏️ Editar Membro</h1>
-    <a href="{{ url_for('listar_membros') }}" class="btn btn-secondary">
-      <i class="fas fa-arrow-left"></i> Voltar
-    </a>
-  </div>
+<div class="container my-5">
+  <h2 class="mb-4">✏️ Editar Membro</h2>
 
-  <form method="post" novalidate>
+  <form method="post" enctype="multipart/form-data" novalidate>
     <!-- Dados Pessoais -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-header"><strong>Dados Pessoais</strong></div>
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-adnipo text-white">
+        <h5 class="mb-0">Dados Pessoais</h5>
+      </div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label">Nome</label>
-            <input type="text" name="nome" class="form-control" value="{{ membro.nome }}" required>
+            <div class="form-floating">
+              <input type="text" name="nome" class="form-control" id="nome" placeholder="Nome" required value="{{ membro.nome }}">
+              <label for="nome">Nome</label>
+            </div>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Endereço</label>
-            <input type="text" name="endereco" class="form-control" value="{{ membro.endereco }}">
+            <div class="form-floating">
+              <input type="text" name="endereco" class="form-control" id="endereco" placeholder="Endereço" value="{{ membro.endereco }}">
+              <label for="endereco">Endereço</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-floating">
+              <input type="text" name="numero" class="form-control" id="numero" placeholder="Número" value="{{ membro.numero }}">
+              <label for="numero">Número</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Cidade</label>
-            <input type="text" name="cidade" class="form-control" value="{{ membro.cidade }}">
+            <div class="form-floating">
+              <input type="text" name="cidade" class="form-control" id="cidade" placeholder="Cidade" value="{{ membro.cidade }}">
+              <label for="cidade">Cidade</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">UF</label>
-            <input type="text" name="uf" class="form-control" value="{{ membro.uf }}">
+            <div class="form-floating">
+              <input type="text" name="uf" class="form-control" id="uf" placeholder="UF" value="{{ membro.uf }}">
+              <label for="uf">UF</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">País</label>
-            <input type="text" name="pais" class="form-control" value="{{ membro.pais }}">
+            <div class="form-floating">
+              <input type="text" name="pais" class="form-control" id="pais" placeholder="País" value="{{ membro.pais }}">
+              <label for="pais">País</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">CEP</label>
-            <input type="text" name="cep" class="form-control" value="{{ membro.cep }}">
+            <div class="form-floating">
+              <input type="text" name="cep" class="form-control" id="cep" placeholder="00000-000" pattern="^\d{5}-\d{3}$" value="{{ membro.cep }}">
+              <label for="cep">CEP</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Telefone</label>
-            <input type="tel" name="telefone" class="form-control" value="{{ membro.telefone }}">
+            <div class="form-floating">
+              <input type="tel" name="telefone" class="form-control" id="telefone" placeholder="(00) 00000-0000" pattern="^\(\d{2}\)\s\d{4,5}-\d{4}$" value="{{ membro.telefone }}">
+              <label for="telefone">Telefone</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">E-mail</label>
-            <input type="email" name="email" class="form-control" value="{{ membro.email }}">
+            <div class="form-floating">
+              <input type="email" name="email" class="form-control" id="email" placeholder="email@exemplo.com" value="{{ membro.email }}">
+              <label for="email">E-mail</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Data de Nascimento</label>
-            <input type="date" name="data_nascimento" class="form-control" value="{{ membro.data_nascimento }}">
+            <div class="form-floating">
+              <input type="date" name="data_nascimento" class="form-control" id="data_nascimento" placeholder="Data de Nascimento" value="{{ membro.data_nascimento }}">
+              <label for="data_nascimento">Data de Nascimento</label>
+            </div>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Naturalidade</label>
-            <input type="text" name="naturalidade" class="form-control" value="{{ membro.naturalidade }}">
+            <div class="form-floating">
+              <input type="text" name="naturalidade" class="form-control" id="naturalidade" placeholder="Naturalidade" value="{{ membro.naturalidade }}">
+              <label for="naturalidade">Naturalidade</label>
+            </div>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Sexo</label>
-            <select name="sexo" class="form-select">
-              <option value="">Selecione</option>
-              <option value="Masculino" {% if membro.sexo == 'Masculino' %}selected{% endif %}>Masculino</option>
-              <option value="Feminino" {% if membro.sexo == 'Feminino' %}selected{% endif %}>Feminino</option>
-            </select>
+            <div class="form-floating">
+              <select name="sexo" class="form-select" id="sexo">
+                <option value="" {% if not membro.sexo %}selected{% endif %}>Selecione</option>
+                <option value="Masculino" {% if membro.sexo == 'Masculino' %}selected{% endif %}>Masculino</option>
+                <option value="Feminino" {% if membro.sexo == 'Feminino' %}selected{% endif %}>Feminino</option>
+              </select>
+              <label for="sexo">Sexo</label>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Dados Complementares -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-header"><strong>Dados Complementares</strong></div>
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-adnipo text-white">
+        <h5 class="mb-0">Dados Complementares</h5>
+      </div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label">Estado Civil</label>
-            <select name="estado_civil" class="form-select">
-              <option value="">Selecione</option>
-              <option value="Solteiro" {% if membro.estado_civil == 'Solteiro' %}selected{% endif %}>Solteiro</option>
-              <option value="Casado" {% if membro.estado_civil == 'Casado' %}selected{% endif %}>Casado</option>
-              <option value="Viúvo" {% if membro.estado_civil == 'Viúvo' %}selected{% endif %}>Viúvo</option>
-              <option value="Divorciado" {% if membro.estado_civil == 'Divorciado' %}selected{% endif %}>Divorciado</option>
-            </select>
+            <div class="form-floating">
+              <select name="estado_civil" class="form-select" id="estado_civil">
+                <option value="" {% if not membro.estado_civil %}selected{% endif %}>Selecione</option>
+                <option value="Solteiro" {% if membro.estado_civil == 'Solteiro' %}selected{% endif %}>Solteiro</option>
+                <option value="Casado" {% if membro.estado_civil == 'Casado' %}selected{% endif %}>Casado</option>
+                <option value="Viúvo" {% if membro.estado_civil == 'Viúvo' %}selected{% endif %}>Viúvo</option>
+                <option value="Divorciado" {% if membro.estado_civil == 'Divorciado' %}selected{% endif %}>Divorciado</option>
+              </select>
+              <label for="estado_civil">Estado Civil</label>
+            </div>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Nome do Cônjuge</label>
-            <input type="text" name="nome_conjuge" class="form-control" value="{{ membro.nome_conjuge }}">
+            <div class="form-floating">
+              <input type="text" name="nome_conjuge" class="form-control" id="nome_conjuge" placeholder="Nome do Cônjuge" value="{{ membro.nome_conjuge }}">
+              <label for="nome_conjuge">Nome do Cônjuge</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Data de Casamento</label>
-            <input type="date" name="data_casamento" class="form-control" value="{{ membro.data_casamento }}">
+            <div class="form-floating">
+              <input type="date" name="data_casamento" class="form-control" id="data_casamento" placeholder="Data de Casamento" value="{{ membro.data_casamento }}">
+              <label for="data_casamento">Data de Casamento</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Escolaridade</label>
-            <input type="text" name="escolaridade" class="form-control" value="{{ membro.escolaridade }}">
+            <div class="form-floating">
+              <input type="text" name="escolaridade" class="form-control" id="escolaridade" placeholder="Escolaridade" value="{{ membro.escolaridade }}">
+              <label for="escolaridade">Escolaridade</label>
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Profissão</label>
-            <input type="text" name="profissao" class="form-control" value="{{ membro.profissao }}">
+            <div class="form-floating">
+              <input type="text" name="profissao" class="form-control" id="profissao" placeholder="Profissão" value="{{ membro.profissao }}">
+              <label for="profissao">Profissão</label>
+            </div>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Nome do Pai</label>
-            <input type="text" name="nome_pai" class="form-control" value="{{ membro.nome_pai }}">
+            <div class="form-floating">
+              <input type="text" name="nome_pai" class="form-control" id="nome_pai" placeholder="Nome do Pai" value="{{ membro.nome_pai }}">
+              <label for="nome_pai">Nome do Pai</label>
+            </div>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Nome da Mãe</label>
-            <input type="text" name="nome_mae" class="form-control" value="{{ membro.nome_mae }}">
+            <div class="form-floating">
+              <input type="text" name="nome_mae" class="form-control" id="nome_mae" placeholder="Nome da Mãe" value="{{ membro.nome_mae }}">
+              <label for="nome_mae">Nome da Mãe</label>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Dados Eclesiásticos -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-header"><strong>Dados Eclesiásticos</strong></div>
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-adnipo text-white">
+        <h5 class="mb-0">Dados Eclesiásticos</h5>
+      </div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label">Tipo de Membro</label>
-            <select name="membro_tipo" class="form-select">
-              <option value="">Selecione</option>
-              <option value="Membro Comungante" {% if membro.membro_tipo == 'Membro Comungante' %}selected{% endif %}>Membro Comungante</option>
-              <option value="Membro Não Comungante" {% if membro.membro_tipo == 'Membro Não Comungante' %}selected{% endif %}>Membro Não Comungante</option>
-              <option value="Não Membro" {% if membro.membro_tipo == 'Não Membro' %}selected{% endif %}>Não Membro</option>
-            </select>
+            <div class="form-floating">
+              <select name="membro_tipo" class="form-select" id="membro_tipo">
+                <option value="">Selecione</option>
+                <option value="Membro">Membro</option>
+                <option value="Visitante">Visitante</option>
+                <option value="Não Membro">Não Membro</option>
+              </select>
+              <label for="membro_tipo">Tipo de Membro</label>
+            </div>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Ofício</label>
-            <select name="oficio" class="form-select">
-              <option value="">Selecione</option>
-              <option value="Sem ofício" {% if membro.oficio == 'Sem ofício' %}selected{% endif %}>Sem ofício</option>
-              <option value="Cooperador" {% if membro.oficio == 'Cooperador' %}selected{% endif %}>Cooperador</option>
-              <option value="Louvor" {% if membro.oficio == 'Louvor' %}selected{% endif %}>Louvor</option>
-              <option value="Oficial Obreiro" {% if membro.oficio == 'Oficial Obreiro' %}selected{% endif %}>Oficial Obreiro</option>
-              <option value="Diaconato" {% if membro.oficio == 'Diaconato' %}selected{% endif %}>Diaconato</option>
-              <option value="Presbiterio" {% if membro.oficio == 'Presbiterio' %}selected{% endif %}>Presbiterio</option>
-              <option value="Pastoreio" {% if membro.oficio == 'Pastoreio' %}selected{% endif %}>Pastoreio</option>
-            </select>
+            <div class="form-floating">
+              <select name="oficio" class="form-select" id="oficio">
+                <option value="">Selecione</option>
+                <option value="Sem ofício">Sem ofício</option>
+                <option value="Cooperador">Cooperador</option>
+                <option value="Louvor">Louvor</option>
+                <option value="Oficial Obreiro">Líderes</option>
+                <option value="Diaconato">Diaconato</option>
+                <option value="Presbiterio">Presbiterio</option>
+                <option value="Pastoreio">Pastoreio</option>
+              </select>
+              <label for="oficio">Ofício</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="date" name="data_batismo" class="form-control" id="data_batismo" placeholder="Data do Batismo" value="{{ membro.data_batismo }}">
+              <label for="data_batismo">Data do Batismo</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="text" name="igreja_batismo" class="form-control" id="igreja_batismo" placeholder="Igreja de Origem" value="{{ membro.igreja_batismo }}">
+              <label for="igreja_batismo">Igreja de Origem</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="text" name="pastor_batismo" class="form-control" id="pastor_batismo" placeholder="Pastor da Igreja de Origem" value="{{ membro.pastor_batismo }}">
+              <label for="pastor_batismo">Pastor da Igreja de Origem</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="foto" class="form-label">Foto do Membro</label>
+            <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
+            {% if membro.foto_url %}
+              <img src="{{ membro.foto_url }}" alt="Foto do Membro" class="img-thumbnail mt-2" style="max-width: 150px;">
+            {% endif %}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Batismo -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-header"><strong>Batismo</strong></div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label">Data do Batismo</label>
-            <input type="date" name="data_batismo" class="form-control" value="{{ membro.data_batismo }}">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Pastor do Batismo</label>
-            <input type="text" name="pastor_batismo" class="form-control" value="{{ membro.pastor_batismo }}">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Igreja do Batismo</label>
-            <input type="text" name="igreja_batismo" class="form-control" value="{{ membro.igreja_batismo }}">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-end">
-      <button type="submit" class="btn btn-success">
-        <i class="fas fa-save"></i> Salvar Alterações
-      </button>
+    <div class="d-flex justify-content-between">
+      <a href="{{ url_for('listar_membros') }}" class="btn btn-secondary">Cancelar</a>
+      <button type="submit" class="btn btn-adnipo">Salvar Alterações</button>
     </div>
   </form>
 </div>
+
+<script>
+  // Busca CEP via API e preenche endereço, cidade, uf
+  document.getElementById('cep').addEventListener('blur', function () {
+    const cep = this.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then(response => response.json())
+      .then(data => {
+        if (!data.erro) {
+          document.getElementById('endereco').value = data.logradouro || '';
+          document.getElementById('cidade').value = data.localidade || '';
+          document.getElementById('uf').value = data.uf || '';
+          document.getElementById('pais').value = 'Brasil';
+        }
+      })
+      .catch(console.error);
+  });
+</script>
 {% endblock %}

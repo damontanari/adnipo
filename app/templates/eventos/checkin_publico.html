@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 500px;">
+    <h1 class="text-center mb-4">Check-in: {{ evento.titulo }}</h1>
+
+    <div class="mb-3 text-center text-muted">
+        <p>{{ evento.descricao or "Sem descrição disponível." }}</p>
+        <p>
+            <i class="bi bi-calendar-event"></i>
+            {{ evento.data_hora.strftime('%d/%m/%Y %H:%M') }}
+            &nbsp;&nbsp;
+            <i class="bi bi-geo-alt"></i>
+            {{ evento.local or "Local não informado" }}
+        </p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if membro %}
+      <p class="lead text-center">Olá, <strong>{{ membro.nome }}</strong>! Confirme sua presença clicando no botão abaixo.</p>
+      <form method="POST" class="d-flex justify-content-center">
+          <button type="submit" class="btn btn-adnipo btn-lg px-5">Confirmar Presença</button>
+      </form>
+    {% else %}
+      <p class="text-center">Digite seu nome completo para registrar a presença.</p>
+      <form method="POST" class="mx-auto" style="max-width: 400px;">
+          <div class="mb-3">
+              <input type="text" name="nome" class="form-control form-control-lg" placeholder="Seu nome completo" required autofocus>
+          </div>
+          <button type="submit" class="btn btn-adnipo btn-lg w-100">Registrar Presença</button>
+      </form>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('listar_eventos') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar para Eventos
+        </a>
+    </div>
+</div>
+{% endblock %}

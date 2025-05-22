@@ -106,44 +106,33 @@ def configure_routes(app):
     @app.route('/admin')
     def admin_home():
         usuario_logado = get_usuario_logado()
-        eventos = Evento.query.order_by(Evento.data_hora.asc()).all()
-        recados = Recado.query.order_by(Recado.data_criacao.asc()).all()
-
+        
         if not usuario_logado:
             flash("Você precisa estar logado para acessar o painel.")
             return redirect(url_for('login'))
 
-        if usuario_logado.is_admin:
-            eventos = Evento.query\
-                .filter(Evento.data_hora >= datetime.now())\
-                .order_by(Evento.data_hora.asc())\
-                .limit(3)\
-                .all()
-        else:
-            eventos = Evento.query\
-                .filter(Evento.data_hora >= datetime.now())\
-                .order_by(Evento.data_hora.asc())\
-                .limit(3)\
-                .all()
+        # Eventos ativos futuros (limitados a 3)
+        eventos = Evento.query\
+            .filter(Evento.data_hora >= datetime.now(), Evento.ativo == True)\
+            .order_by(Evento.data_hora.asc())\
+            .limit(3)\
+            .all()
 
-        print(eventos)
+        # Recados futuros (limitados a 3)
+        recados = Recado.query\
+            .filter(Recado.data_criacao >= datetime.now())\
+            .order_by(Recado.data_criacao.asc())\
+            .limit(3)\
+            .all()
 
-        if usuario_logado.is_admin:
-            recados = Recado.query\
-                .filter(Recado.data_criacao >= datetime.now())\
-                .order_by(Recado.data_criacao.asc())\
-                .limit(3)\
-                .all()
-        else:
-            recados = Recado.query\
-                .filter(Recado.data_criacao >= datetime.now())\
-                .order_by(Recado.data_criacao.asc())\
-                .limit(3)\
-                .all()
+        # Evento ativo do dia (considerando somente ativos)
+        evento_ativo = Evento.query.filter(
+            Evento.data_hora >= datetime.now(),
+            Evento.ativo == True
+        ).order_by(Evento.data_hora.asc()).first()
 
-        print(recados)
-            
         publicos = Publico.query.all()
+        membro_id = usuario_logado.membro.id if usuario_logado.membro else None
 
         return render_template(
             'home.html',
@@ -151,10 +140,12 @@ def configure_routes(app):
             timedelta=timedelta,
             eventos=eventos,
             recados=recados,
-            publicos=publicos
+            publicos=publicos,
+            evento_ativo=evento_ativo,
+            membro_id=membro_id
         )
 
-    
+        
 
     @app.route('/perfil')
     @login_requerido
@@ -360,19 +351,32 @@ def configure_routes(app):
             membro.pastor_batismo = request.form.get('pastor_batismo')
             membro.igreja_batismo = request.form.get('igreja_batismo')
 
+            # Processar datas com conversão para datetime.date
+            def parse_date(field_name):
+                data_str = request.form.get(field_name)
+                if data_str:
+                    try:
+                        return datetime.strptime(data_str, '%Y-%m-%d').date()
+                    except ValueError:
+                        return None
+                return None
+
+            membro.data_nascimento = parse_date('data_nascimento')
+            membro.data_casamento = parse_date('data_casamento')
+            membro.data_batismo = parse_date('data_batismo')
+
+            # Foto upload
             foto = request.files.get('foto')
             if foto and allowed_file(foto.filename):
-                foto_filename = secure_filename(foto.filename)
-                foto.save(os.path.join(app.config['UPLOAD_FOLDER'], foto_filename))
-                membro.foto = foto_filename
-
-            membro.data_nascimento = request.form['data_nascimento'] or None
-            membro.data_casamento = request.form['data_casamento'] or None
-            membro.data_batismo = request.form['data_batismo'] or None
+                filename = secure_filename(foto.filename)
+                foto_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                foto.save(foto_path)
+                membro.foto = filename
 
             db.session.commit()
             flash('Membro atualizado com sucesso!')
             return redirect(url_for('listar_membros'))
+
         return render_template('membros/editar.html', membro=membro)
 
 
@@ -474,20 +478,25 @@ def configure_routes(app):
         else:
             print("Nenhum usuário logado.")
 
-        # Se for admin, vê todos. Se for membro, filtra
         if usuario_logado.is_admin:
+            # Admin vê todos os eventos
             eventos_para_mim = Evento.query.order_by(Evento.data_hora.asc()).all()
+            aviso = None
         else:
-            oficio_usuario = usuario_logado.membro.oficio if usuario_logado.membro else None
+            if usuario_logado.membro and usuario_logado.membro.oficio:
+                oficio_usuario = usuario_logado.membro.oficio
+                eventos_para_mim = Evento.query.join(Evento.publicos).filter(
+                    (Publico.nome == 'Todos') | (Publico.nome == oficio_usuario)
+                ).order_by(Evento.data_hora.asc()).all()
+                aviso = None
+            else:
+                # Sem membro ou sem oficio — vê só os eventos públicos
+                eventos_para_mim = Evento.query.join(Evento.publicos).filter(
+                    Publico.nome == 'Todos'
+                ).order_by(Evento.data_hora.asc()).all()
+                aviso = "Seu usuário não está vinculado a um membro ou ofício. Você verá apenas eventos públicos."
 
-            eventos_para_mim = Evento.query.join(Evento.publicos).filter(
-                (Publico.nome == 'Todos') |
-                (Publico.nome == oficio_usuario)
-            ).order_by(Evento.data_hora.asc()).all()
-
-        proximo_evento = Evento.query.filter(Evento.data_hora >= datetime.now()).order_by(Evento.data_hora.asc()).first()
-
-        return render_template('eventos/lista.html', eventos=eventos_para_mim, usuario_logado=usuario_logado)
+        return render_template('eventos/lista.html', eventos=eventos_para_mim, usuario_logado=usuario_logado, aviso=aviso)
     
 
     @app.route('/eventos/novo', methods=['GET', 'POST'])
@@ -533,7 +542,6 @@ def configure_routes(app):
     def editar_evento(evento_id):
         usuario_logado = get_usuario_logado()
         evento = Evento.query.get_or_404(evento_id)
-        publicos_ids = request.form.getlist('publicos')
 
         if request.method == 'POST':
             evento.titulo = request.form['titulo']
@@ -541,9 +549,12 @@ def configure_routes(app):
             evento.local = request.form['local']
             evento.descricao = request.form['descricao']
 
+            # Atualiza os públicos
+            publicos_ids = request.form.getlist('publicos')
+            evento.publicos.clear()
             for publico_id in publicos_ids:
                 publico = Publico.query.get(publico_id)
-                novo_evento.publicos.append(publico)
+                evento.publicos.append(publico)
 
             db.session.commit()
             flash('Evento atualizado com sucesso!', 'success')
@@ -551,6 +562,7 @@ def configure_routes(app):
         
         publicos = Publico.query.all()
         return render_template('eventos/editar.html', evento=evento, usuario_logado=usuario_logado, publicos=publicos)
+
     
     @app.route('/eventos/excluir/<int:evento_id>', methods=['POST'])
     @login_requerido
@@ -732,49 +744,89 @@ def configure_routes(app):
 
 
     ## Prensença Membro
-    @app.route('/presenca/scanner')
-    @login_requerido  # para garantir que só admin logado acesse
-    @admin_requerido
-    def presenca_scanner():
-        evento = Evento.query.filter_by(ativo=True).first()
-        if not evento:
-            flash("Nenhum evento ativo no momento!", "warning")
-            return redirect(url_for('admin_home'))
-        return render_template('presenca/scanner.html', evento=evento)
-    
-
-    @app.route('/presenca/checkin/<int:membro_id>')
+    @app.route('/eventos/toggle/<int:evento_id>', methods=['POST'])
     @login_requerido
     @admin_requerido
-    def checkin_presenca(membro_id):
-        evento = Evento.query.filter_by(ativo=True).first()
-        if not evento:
-            return "Nenhum evento ativo no momento.", 404
-
-        membro = Membro.query.get_or_404(membro_id)
-
-        presenca_existente = Presenca.query.filter_by(membro_id=membro.id, evento_id=evento.id).first()
-        if presenca_existente:
-            return f"{membro.nome} já registrou presença neste evento."
-
-        nova_presenca = Presenca(membro_id=membro.id, evento_id=evento.id)
-        db.session.add(nova_presenca)
-        db.session.commit()
-
-        return f"Presença registrada para {membro.nome} no evento {evento.titulo}."
-    
-
-    @app.route('/eventos/ativar/<int:evento_id>', methods=['POST'])
-    @login_requerido
-    @admin_requerido
-    def ativar_evento(evento_id):
-        # Desativa todos os eventos
-        Evento.query.update({Evento.ativo: False})
-        # Ativa o evento escolhido
+    def toggle_evento(evento_id):
         evento = Evento.query.get_or_404(evento_id)
-        evento.ativo = True
+
+        evento.ativo = not evento.ativo
+
         db.session.commit()
-        flash(f"Evento '{evento.titulo}' ativado com sucesso!", "success")
         return redirect(url_for('listar_eventos'))
 
+    @app.route('/checkin/scan')
+    @login_requerido
+    def checkin_scan():
+        return render_template('eventos/checkin_scan.html')
 
+
+    # QRCode de evento
+    @app.route('/eventos/qrcode/<int:evento_id>')
+    @login_requerido
+    @admin_requerido
+    def gerar_qrcode_evento(evento_id):
+        evento = Evento.query.get_or_404(evento_id)
+
+        checkin_url = url_for('checkin_publico', evento_id=evento.id, _external=True)
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(checkin_url)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+        return render_template('eventos/qrcode.html', evento=evento, qrcode_image=img_base64)
+
+
+    # Página pública de check-in via QRCode
+    @app.route('/checkin/publico/<int:evento_id>', methods=['GET', 'POST'])
+    @login_requerido
+    def checkin_publico(evento_id):
+        evento = Evento.query.get_or_404(evento_id)
+
+        # Tenta pegar o membro pelo usuário logado (supondo que user tem membro)
+        membro = get_usuario_logado
+
+        if request.method == 'POST':
+            # Se usuário logado, usa o membro dele direto
+            if membro:
+                presenca_existente = Presenca.query.filter_by(membro_id=membro.id, evento_id=evento.id).first()
+                if presenca_existente:
+                    flash("Você já registrou presença neste evento.", "info")
+                else:
+                    nova_presenca = Presenca(membro_id=membro.id, evento_id=evento.id)
+                    db.session.add(nova_presenca)
+                    db.session.commit()
+                    flash("Presença registrada com sucesso!", "success")
+                return redirect(url_for('EVENTOScheckin_publico', evento_id=evento.id))
+
+            # Se não logado ou não tiver membro, pede nome no form e procura
+            nome = request.form.get('nome')
+            if not nome:
+                flash("Por favor, preencha o nome.", "warning")
+            else:
+                membro = Membro.query.filter_by(nome=nome).first()
+                if not membro:
+                    flash("Membro não encontrado.", "danger")
+                else:
+                    presenca_existente = Presenca.query.filter_by(membro_id=membro.id, evento_id=evento.id).first()
+                    if presenca_existente:
+                        flash("Você já registrou presença neste evento.", "info")
+                    else:
+                        nova_presenca = Presenca(membro_id=membro.id, evento_id=evento.id)
+                        db.session.add(nova_presenca)
+                        db.session.commit()
+                        flash("Presença registrada com sucesso!", "success")
+                        return redirect(url_for('checkin_publico', evento_id=evento.id))
+
+        return render_template('eventos/checkin_publico.html', evento=evento, membro=membro)
