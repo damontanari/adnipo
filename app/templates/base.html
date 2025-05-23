@@ -117,7 +117,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
       <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('site_home') }}">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('admin_home') }}">
           <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="me-2">
           Adnipo
         </a>
@@ -243,8 +243,8 @@
             {% else %}
               <!-- Para visitantes não logados -->
               <li class="nav-item">
-                <a class="nav-link" href="#contato">
-                  <i class="bi bi-envelope me-1"></i> Contato
+                <a class="nav-link" href="{{ url_for('site_home') }}">
+                  <i class="bi bi-house-door-fill me-1"></i> Site
                 </a>
               </li>
               <li class="nav-item ms-lg-3">

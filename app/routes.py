@@ -320,6 +320,97 @@ def configure_routes(app):
             return redirect(url_for('listar_membros'))
 
         return render_template('membros/novo.html')
+    
+
+    @app.route('/membros/cadastrar', methods=['GET', 'POST'])
+    def membro_cadastrar():
+        if request.method == 'POST':
+            # dados do formulário
+            nome = request.form.get('nome')
+            endereco = request.form.get('endereco')
+            numero = request.form.get('numero')
+            cidade = request.form.get('cidade')
+            uf = request.form.get('uf')
+            pais = request.form.get('pais')
+            cep = request.form.get('cep')
+            telefone = request.form.get('telefone')
+            email = request.form.get('email')
+            naturalidade = request.form.get('naturalidade')
+            sexo = request.form.get('sexo')
+            estado_civil = request.form.get('estado_civil')
+            nome_conjuge = request.form.get('nome_conjuge')
+            escolaridade = request.form.get('escolaridade')
+            profissao = request.form.get('profissao')
+            nome_pai = request.form.get('nome_pai')
+            nome_mae = request.form.get('nome_mae')
+            membro_tipo = request.form.get('membro_tipo')
+            oficio = request.form.get('oficio')
+            pastor_batismo = request.form.get('pastor_batismo')
+            igreja_batismo = request.form.get('igreja_batismo')
+
+            foto = request.files.get('foto')
+            foto_filename = None
+            if foto and allowed_file(foto.filename):
+                foto_filename = secure_filename(foto.filename)
+                foto.save(os.path.join(app.config['UPLOAD_FOLDER'], foto_filename))
+
+            def parse_date(date_str):
+                return datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else None
+
+            data_nascimento = parse_date(request.form.get('data_nascimento'))
+            data_casamento  = parse_date(request.form.get('data_casamento'))
+            data_batismo    = parse_date(request.form.get('data_batismo'))
+
+            # Cria o novo membro
+            membro_cadastrar = Membro(
+                nome=nome,
+                endereco=endereco,
+                numero=numero,
+                cidade=cidade,
+                uf=uf,
+                pais=pais,
+                cep=cep,
+                telefone=telefone,
+                email=email,
+                data_nascimento=data_nascimento,
+                naturalidade=naturalidade,
+                sexo=sexo,
+                estado_civil=estado_civil,
+                nome_conjuge=nome_conjuge,
+                data_casamento=data_casamento,
+                data_batismo=data_batismo,
+                escolaridade=escolaridade,
+                profissao=profissao,
+                nome_pai=nome_pai,
+                nome_mae=nome_mae,
+                membro_tipo=membro_tipo,
+                oficio=oficio,
+                pastor_batismo=pastor_batismo,
+                igreja_batismo=igreja_batismo,
+                foto=foto_filename,
+                data_cadastro=datetime.utcnow(),
+                usuario_id=session.get('usuario_id')
+            )
+
+            db.session.add(membro_cadastrar)
+            db.session.commit()  # precisa antes para pegar novo_membro.id
+
+            # Cria usuário vinculado ao membro
+            novo_usuario = Usuario(
+                nome=membro_cadastrar.nome,
+                email=membro_cadastrar.email,
+                is_admin=False,
+                membro_id=membro_cadastrar.id
+            )
+            novo_usuario.set_senha('adnipo')  # senha padrão
+
+            db.session.add(novo_usuario)
+            db.session.commit()
+
+            flash(f'Membro {membro_cadastrar.nome} cadastrado e usuário criado com senha padrão.', 'success')
+            return redirect(url_for('login'))
+
+        return render_template('membros/cadastro.html')
 
 
     @app.route('/membros/editar/<int:membro_id>', methods=['GET', 'POST'])
@@ -397,7 +488,7 @@ def configure_routes(app):
     def carteirinha_membro(membro_id):
         membro = Membro.query.get_or_404(membro_id)
         # Usar a rota de checkin para o QR code:
-        data_para_qr = url_for('checkin_presenca', membro_id=membro.id, _external=True)
+        data_para_qr = url_for('checkin_scan', membro_id=membro.id, _external=True)
 
         qr = qrcode.make(data_para_qr)
         img_io = BytesIO()
@@ -808,7 +899,7 @@ def configure_routes(app):
                     db.session.add(nova_presenca)
                     db.session.commit()
                     flash("Presença registrada com sucesso!", "success")
-                return redirect(url_for('EVENTOScheckin_publico', evento_id=evento.id))
+                return redirect(url_for('eventos/checkin_publico', evento_id=evento.id))
 
             # Se não logado ou não tiver membro, pede nome no form e procura
             nome = request.form.get('nome')
