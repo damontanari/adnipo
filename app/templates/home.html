@@ -6,8 +6,19 @@
     <div class="text-center mb-5">
         <h1>Bem-vindo(a), {{ usuario_logado.nome }}!</h1>
         <p class="lead">Este é o Painel Administrativo da Assembleia de Deus Nipo Brasileira - ADNIPO.</p>
-        <hr class="my-4">
+        <!-- <hr class="my-4"> -->
     </div>
+
+    <div class="card mb-4 p-3 shadow-sm">
+      <h5 class="card-title mb-2">📖 Versículo para Você!</h5>
+      <p class="mb-1 fw-bold text-primary">{{ versiculo.reference }}</p>
+      <p class="card-text text-wrap" style="word-break: break-word;">
+        "{{ versiculo.text }}"
+      </p>
+      <!-- <small class="text-muted d-block">Tradução: {{ versiculo.translation_name }}</small> -->
+    </div>
+
+
 
     <div class="row">
 

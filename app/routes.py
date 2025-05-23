@@ -11,6 +11,8 @@ import os
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.utils import allowed_file
+import requests
+import random
 
 # Função para recuperar o usuário logado
 def get_usuario_logado():
@@ -20,6 +22,7 @@ def get_usuario_logado():
         return usuario
     return None
 
+# Verificando se existe recados não lidos
 def get_recados_nao_lidos(usuario):
     todos_recados = Recado.query.order_by(Recado.data_criacao.desc()).all()
     return [r for r in todos_recados if usuario not in r.lido_por]
@@ -49,8 +52,11 @@ def admin_requerido(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
+# Configuração das rotas
 def configure_routes(app):
 
+    # Carregar os recados que não foram lidos
     @app.context_processor
     def carregar_recados_nao_lidos():
         usuario_logado = get_usuario_logado()
@@ -106,6 +112,25 @@ def configure_routes(app):
     @app.route('/admin')
     def admin_home():
         usuario_logado = get_usuario_logado()
+
+        try:
+            versiculos = [
+                "João 3:16", "Salmos 23:1", "Provérbios 3:5", "Filipenses 4:13",
+                "Romanos 8:28", "Isaías 41:10", "Mateus 6:33", "Salmos 37:5",
+                "Tiago 1:5", "Jeremias 29:11", "Salmos 46:1", "Mateus 11:28",
+                "Romanos 12:2", "Salmos 91:1", "Isaías 40:31", "2 Coríntios 5:17"
+            ]
+
+            verso_aleatorio = random.choice(versiculos)
+            response = requests.get(f'https://bible-api.com/{verso_aleatorio}?translation=almeida')
+            versiculo = response.json()
+
+        except Exception as e:
+            versiculo = {
+                "reference": "Erro ao buscar versículo",
+                "text": f"{e}",
+                "translation_name": ""
+            }
         
         if not usuario_logado:
             flash("Você precisa estar logado para acessar o painel.")
@@ -142,7 +167,8 @@ def configure_routes(app):
             recados=recados,
             publicos=publicos,
             evento_ativo=evento_ativo,
-            membro_id=membro_id
+            membro_id=membro_id,
+            versiculo=versiculo
         )
 
         
