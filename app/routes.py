@@ -962,7 +962,11 @@ def configure_routes(app):
             return redirect(request.referrer)
 
         # Salvar no banco
-        novo_visitante = VisitanteLead(nome=nome, telefone=telefone)
+        novo_visitante = VisitanteLead(
+            nome=nome, 
+            telefone=telefone,
+            data_cadastro=datetime.utcnow(),
+            )
         db.session.add(novo_visitante)
         db.session.commit()
 
