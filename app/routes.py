@@ -15,6 +15,7 @@ import requests
 import random
 import csv
 from io import StringIO
+from urllib.parse import quote
 
 # Função para recuperar o usuário logado
 def get_usuario_logado():
@@ -1014,7 +1015,7 @@ def configure_routes(app):
     @login_requerido
     @admin_requerido
     def aniversariantes_hoje():
-        from datetime import datetime
+        from datetime import datetime, date
         hoje = datetime.now()
 
         membros = Membro.query.filter(
@@ -1023,4 +1024,40 @@ def configure_routes(app):
             db.extract('month', Membro.data_nascimento) == hoje.month
         ).order_by(Membro.nome).all()
 
-        return render_template('membros/aniversariantes_hoje.html', membros=membros)
+        # Adicionando a idade no objeto retornado
+        for m in membros:
+            if m.data_nascimento:
+                m.idade = hoje.year - m.data_nascimento.year - (
+                    (hoje.month, hoje.day) < (m.data_nascimento.month, m.data_nascimento.day)
+                )
+            else:
+                m.idade = None
+
+        mensagem_parabens = "Olá {nome}! Parabéns pelo seu aniversário 🎉 Que Deus te abençoe grandemente!"
+
+        return render_template(
+            'membros/aniversariantes_hoje.html',
+            membros=membros,
+            mensagem_parabens=mensagem_parabens
+        )
+
+    @app.route('/enviar_parabens/<int:membro_id>')
+    @login_requerido
+    @admin_requerido
+    def enviar_parabens(membro_id):
+        membro = Membro.query.get_or_404(membro_id)
+
+        frases = [
+            f"🎉 Parabéns, {membro.nome}! Que Deus continue enchendo sua vida de bênçãos, sorrisos e motivos pra agradecer. 'Este é o dia que o Senhor fez; regozijemo-nos e alegremo-nos nele!' (Salmos 118:24). Aproveite seu dia, porque ele é seu! ✨🙌",
+            f"🎂 Feliz aniversário, {membro.nome}! Que a paz que excede todo entendimento guarde seu coração e sua mente em Cristo Jesus (Filipenses 4:7). Que venham mais anos de vida, saúde e motivos pra rir alto e viver leve! 🎈🙏",
+            f"🎊 Hoje o céu faz festa e a terra celebra sua vida, {membro.nome}! Que o Senhor te cubra de graça e alegria, e que você continue espalhando luz por onde passar. 'A alegria do Senhor é a nossa força!' (Neemias 8:10). Feliz vida! 🌸✨",
+            f"🎉 Parabéns, {membro.nome}! Que seu coração transborde gratidão e alegria, porque Deus é bom e sua fidelidade dura pra sempre (Salmos 100:5). Que seu novo ano venha recheado de sonhos realizados e sorrisos largos! 🙏❤️"
+        ]
+
+        frase_escolhida = random.choice(frases)
+        telefone = membro.telefone.replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
+        mensagem = quote(frase_escolhida)
+
+        link_whatsapp = f"https://wa.me/55{telefone}?text={mensagem}"
+
+        return redirect(link_whatsapp)

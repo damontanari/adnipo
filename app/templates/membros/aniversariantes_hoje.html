@@ -4,8 +4,8 @@
 
 <!-- Botões -->
 <div class="text-end mt-4">
-  <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary ms-2">
-    <i class="bi bi-arrow-left-circle"></i> Início
+  <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary rounded-pill px-3">
+    <i class="bi bi-arrow-left-circle me-1"></i> Início
   </a>
 </div>
 
@@ -25,8 +25,14 @@
               <h5 class="card-title fw-bold">{{ m.nome }}</h5>
               <p class="card-text"><i class="bi bi-telephone-fill me-2"></i>{{ m.telefone }}</p>
               {% if m.data_nascimento %}
-              <small class="text-muted">🎂 {{ m.data_nascimento.strftime('%d/%m/%Y') }}</small>
+                <small class="text-muted">🎂 {{ m.data_nascimento.strftime('%d/%m/%Y') }}</small><br>
+                <small class="text-muted">🧁 {{ m.idade }} anos</small>
               {% endif %}
+              <div class="mt-3">
+                <a href="{{ url_for('enviar_parabens', membro_id=m.id) }}" target="_blank" class="btn btn-success btn-sm">
+                  <i class="bi bi-whatsapp"></i> Enviar Parabéns
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -38,4 +44,5 @@
     </div>
   {% endif %}
 </div>
+
 {% endblock %}
