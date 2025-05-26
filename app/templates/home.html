@@ -24,31 +24,49 @@
         <div class="card-body">
           <h5 class="card-title mb-3"><i class="bi bi-shield-lock me-2"></i>Área Administrativa</h5>
           <div class="row g-3">
+            <!-- Visualizar membros -->
             <div class="col-md-6 col-lg-4">
               <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Visualizar e editar membros">
                 <i class="bi bi-people-fill me-1"></i>Membros
               </a>
             </div>
+            <!-- Relatorios -->
             <div class="col-md-6 col-lg-4">
               <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Ver estatísticas">
                 <i class="bi bi-bar-chart-line-fill me-1"></i>Relatórios
               </a>
             </div>
+            <!-- Novo membro -->
             <div class="col-md-6 col-lg-4">
               <a href="{{ url_for('novo_membro') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Cadastrar novo membro">
                 <i class="bi bi-person-plus-fill me-1"></i>Novo Membro
               </a>
             </div>
+            <!-- Novo recado -->
             <div class="col-md-6 col-lg-4">
               <a href="{{ url_for('novo_recado') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Adicionar novo recado">
                 <i class="bi bi-pencil-square me-1"></i>Novo Recado
               </a>
             </div>
+            <!-- Novo evento -->
             <div class="col-md-6 col-lg-4">
               <a href="{{ url_for('novo_evento') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Cadastrar novo evento">
                 <i class="bi bi-calendar-plus me-1"></i>Novo Evento
               </a>
             </div>
+            <!-- Visitantes -->
+            <div class="col-md-6 col-lg-4">
+              <a href="{{ url_for('listar_visitantes') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Ver Visitantes">
+                <i class="bi bi-eye-fill me-1"></i>Ver Visitantes
+              </a>
+            </div>
+            <!-- Aniversariantes do dia -->
+            <div class="col-md-6 col-lg-4">
+              <a href="{{ url_for('aniversariantes_hoje') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="aniversariantes">
+                <i class="bi bi-cake2-fill me-1"></i>Aniversariantes
+              </a>
+            </div>
+
           </div>
         </div>
       </div>
@@ -116,16 +134,6 @@
       </div>
     </div>
 
-    <!-- Visitantes -->
-    <div class="col-md-6">
-      <div class="card shadow-sm border-0 rounded-4 h-100">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title"><i class="bi bi-eye-fill me-2"></i>Visitantes</h5>
-          <p class="card-text flex-grow-1">Veja quem preencheu o cadastro de boas-vindas.</p>
-          <a href="{{ url_for('listar_visitantes') }}" class="btn btn-adnipo mt-auto">Ver Visitantes</a>
-        </div>
-      </div>
-    </div>
 
   </div>
 

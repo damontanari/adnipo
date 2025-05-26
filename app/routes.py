@@ -1007,3 +1007,20 @@ def configure_routes(app):
 
         output.seek(0)
         return send_file(output, download_name='visitantes.xlsx', as_attachment=True)
+    
+
+    # CONTROLE MEMBROS
+    @app.route('/aniversariantes_hoje')
+    @login_requerido
+    @admin_requerido
+    def aniversariantes_hoje():
+        from datetime import datetime
+        hoje = datetime.now()
+
+        membros = Membro.query.filter(
+            Membro.data_nascimento.isnot(None),
+            db.extract('day', Membro.data_nascimento) == hoje.day,
+            db.extract('month', Membro.data_nascimento) == hoje.month
+        ).order_by(Membro.nome).all()
+
+        return render_template('membros/aniversariantes_hoje.html', membros=membros)
