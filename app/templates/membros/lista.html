@@ -2,15 +2,15 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">📋 Lista de Membros</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h1 class="mb-2 mb-md-0">📋 Lista de Membros</h1>
         <div>
             {% if usuario_logado and usuario_logado.is_admin %}
-            <a href="{{ url_for('novo_membro') }}" class="btn btn-success me-2">
-                <i class="fas fa-user-plus"></i> Novo Membro
+            <a href="{{ url_for('novo_membro') }}" class="btn btn-adnipo btn-rounded me-2 shadow-sm" role="button" aria-label="Novo Membro">
+                <i class="fas fa-user-plus me-1"></i> Novo Membro
             </a>
-            <a href="{{ url_for('exportar_membros') }}" class="btn btn-outline-primary">
-                <i class="fas fa-file-excel"></i> Exportar XLSX
+            <a href="{{ url_for('exportar_membros') }}" class="btn btn-outline-adnipo btn-rounded shadow-sm" role="button" aria-label="Exportar XLSX">
+                <i class="fas fa-file-excel me-1"></i> Exportar XLSX
             </a>
             {% endif %}
         </div>
@@ -24,11 +24,11 @@
         <div class="card-body">
             <form method="get" action="{{ url_for('listar_membros') }}">
                 <div class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <input type="text" name="nome" class="form-control" placeholder="Nome"
                             value="{{ request.args.get('nome') or '' }}">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <select name="oficio" class="form-select">
                             <option value="">Ofício</option>
                             {% for o in oficios_disponiveis %}
@@ -36,7 +36,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <select name="status_membro" class="form-select">
                             <option value="">Status Membro</option>
                             <option value="Visitante" {% if request.args.get('status_membro') == 'Visitante' %}selected{% endif %}>Visitante</option>
@@ -44,14 +44,14 @@
                             <option value="Não Membro" {% if request.args.get('status_membro') == 'Não Membro' %}selected{% endif %}>Não Membro</option>
                         </select>
                     </div>
-                    <div class="col-md-2 d-grid">
-                        <button type="submit" class="btn btn-adnipo">
-                            <i class="fas fa-search"></i> Buscar
+                    <div class="col-6 col-md-2 d-grid">
+                        <button type="submit" class="btn btn-adnipo btn-rounded shadow-sm">
+                            <i class="fas fa-search me-1"></i> Buscar
                         </button>
                     </div>
-                    <div class="col-md-2 d-grid">
-                        <a href="{{ url_for('listar_membros') }}" class="btn btn-secondary">
-                            <i class="fas fa-times-circle"></i> Limpar
+                    <div class="col-6 col-md-2 d-grid">
+                        <a href="{{ url_for('listar_membros') }}" class="btn btn-secondary btn-rounded shadow-sm" role="button" aria-label="Limpar filtros">
+                            <i class="fas fa-times-circle me-1"></i> Limpar
                         </a>
                     </div>
                 </div>
@@ -63,7 +63,6 @@
     <div class="mb-3">
         <span class="badge bg-adnipo fs-6">Total de membros: {{ total_membros }}</span>
     </div>
-
 
     <!-- Tabela -->
     <div class="card shadow-sm">
@@ -90,15 +89,15 @@
                             <td>{{ membro.oficio }}</td>
                             <td class="text-center">
                                 {% if usuario_logado and usuario_logado.is_admin %}
-                                <div class="btn-group" role="group">
-                                    <a href="{{ url_for('editar_membro', membro_id=membro.id) }}" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Editar">
+                                <div class="btn-group" role="group" aria-label="Ações do membro">
+                                    <a href="{{ url_for('editar_membro', membro_id=membro.id) }}" class="btn btn-warning btn-sm btn-rounded shadow-sm" data-bs-toggle="tooltip" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{{ url_for('carteirinha_membro', membro_id=membro.id) }}" class="btn btn-info btn-sm" data-bs-toggle="tooltip" title="Carteirinha">
+                                    <a href="{{ url_for('carteirinha_membro', membro_id=membro.id) }}" class="btn btn-info btn-sm btn-rounded shadow-sm" data-bs-toggle="tooltip" title="Carteirinha">
                                         <i class="fas fa-id-card"></i>
                                     </a>
                                     <form action="{{ url_for('excluir_membro', membro_id=membro.id) }}" method="post" onsubmit="return confirmarExclusao();" style="display:inline;">
-                                        <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Excluir">
+                                        <button type="submit" class="btn btn-danger btn-sm btn-rounded shadow-sm" data-bs-toggle="tooltip" title="Excluir">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
@@ -115,8 +114,8 @@
 
     <!-- Paginação -->
     {% if pagination %}
-    <nav class="mt-4">
-        <ul class="pagination justify-content-center">
+    <nav class="mt-4" aria-label="Paginação">
+        <ul class="pagination justify-content-center flex-wrap">
             {% if pagination.has_prev %}
                 <li class="page-item">
                     <a class="page-link" href="{{ url_for('listar_membros', page=pagination.prev_num, **request.args) }}" aria-label="Anterior">
@@ -155,7 +154,7 @@
     <!-- Estatísticas -->
     <h4 class="mt-5 mb-3">📊 Dashboard</h4>
     <div class="row g-3">
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <div class="card text-bg-light shadow-sm">
                 <div class="card-header d-flex align-items-center">
                     <i class="fas fa-briefcase me-2"></i> Por Ofício
@@ -173,7 +172,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <div class="card text-bg-light shadow-sm">
                 <div class="card-header d-flex align-items-center">
                     <i class="fas fa-city me-2"></i> Por Cidade
@@ -191,7 +190,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <div class="card text-bg-light shadow-sm">
                 <div class="card-header d-flex align-items-center">
                     <i class="fas fa-users me-2"></i> Por Status
@@ -208,7 +207,6 @@
                 </div>
             </div>
         </div>
-
 
     </div>
 
@@ -230,6 +228,60 @@ tooltipTriggerList.forEach(function (tooltipTriggerEl) {
 {% endblock %}
 
 <style>
+/* Botões com cantos arredondados e sombras suaves */
+.btn-rounded {
+    border-radius: 1.2rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-adnipo {
+    background-color: #0069d9;
+    color: white;
+    border: none;
+}
+.btn-adnipo:hover,
+.btn-adnipo:focus {
+    background-color: #0053ba;
+    box-shadow: 0 0 8px rgba(0, 105, 217, 0.6);
+    color: white;
+}
+
+.btn-outline-adnipo {
+    color: #0069d9;
+    border: 2px solid #0069d9;
+    background-color: transparent;
+}
+.btn-outline-adnipo:hover,
+.btn-outline-adnipo:focus {
+    background-color: #0069d9;
+    color: white;
+    box-shadow: 0 0 8px rgba(0, 105, 217, 0.6);
+}
+
+/* Sombras sutis para botões pequenos */
+.btn-sm.shadow-sm {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Espaçamento para ícones e texto */
+.btn i {
+    vertical-align: middle;
+}
+
+/* Pagination active */
+.pagination .page-item.active .page-link {
+    background-color: #0069d9;
+    border-color: #0069d9;
+}
+
+/* Hover suave para botões secundários */
+.btn-secondary.btn-rounded:hover,
+.btn-secondary.btn-rounded:focus {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Ajuste vertical da tabela */
 .table th, .table td {
     vertical-align: middle;
 }
@@ -237,10 +289,23 @@ tooltipTriggerList.forEach(function (tooltipTriggerEl) {
     text-align: center;
 }
 .btn-group .btn {
-    margin-right: 4px;
+    margin-right: 0.3rem;
 }
-.pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+
+/* Cores personalizadas para badges */
+.bg-adnipo {
+    background-color: #0069d9 !important;
+    color: white !important;
+}
+
+/* Responsividade e espaçamento para o header */
+@media (max-width: 576px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
 }
 </style>

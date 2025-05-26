@@ -3,23 +3,23 @@
 {% block title %}Meu Perfil{% endblock %}
 
 {% block content %}
-<div class="card card-custom p-4">
+<div class="card card-custom p-4 my-4">
   <h3 class="text-adnipo mb-4">Meu Perfil</h3>
 
   <form method="POST" action="{{ url_for('alterar_senha') }}">
-    <div class="mb-3">
-      <label class="form-label">Nome:</label>
+    <div class="mb-4">
+      <label class="form-label fw-semibold">Nome:</label>
       <input type="text" class="form-control" value="{{ usuario.nome }}" disabled>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Email:</label>
+    <div class="mb-4">
+      <label class="form-label fw-semibold">Email:</label>
       <input type="email" class="form-control" value="{{ usuario.email }}" disabled>
     </div>
 
-    <hr class="my-4">
+    <hr class="my-5">
 
-    <h5 class="text-adnipo">Alterar Senha</h5>
+    <h5 class="text-adnipo mb-3">Alterar Senha</h5>
 
     <div class="mb-3">
       <label class="form-label">Senha Atual</label>
@@ -31,19 +31,17 @@
       <input type="password" class="form-control" name="nova_senha" required>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-4">
       <label class="form-label">Confirmar Nova Senha</label>
       <input type="password" class="form-control" name="confirmar_senha" required>
     </div>
 
-    <!-- Botões -->
     <div class="text-end mt-4">
-      <button type="submit" class="btn btn-adnipo">Atualizar Senha</button>
-      <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary ms-2">
-        <i class="bi bi-arrow-left-circle"></i> Voltar
+      <button type="submit" class="btn btn-adnipo px-4">Atualizar Senha</button>
+      <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary ms-3 px-4">
+        <i class="bi bi-arrow-left-circle me-1"></i> Voltar
       </a>
     </div>
-    
   </form>
 </div>
 {% endblock %}

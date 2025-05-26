@@ -1,28 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container text-center">
-  <h2>Faça sua Oferta ou Dízimo</h2>
+<div class="container text-center my-4">
+  <h2 class="fw-bold text-adnipo">Faça sua Oferta ou Dízimo</h2>
   <p class="lead">Use a chave Pix abaixo ou escaneie o QR Code para contribuir:</p>
 
   <div class="mb-3">
     <h4 class="mt-4">🔑</h4>
-    <div class="d-inline-block p-3 bg-light rounded" style="font-family: monospace; word-break: break-all; max-width: 90%; text-align: left;">
+    <div class="d-inline-block p-3 bg-light rounded-4" style="font-family: monospace; word-break: break-all; max-width: 90%; text-align: left;">
       {% for i in range(0, chave_pix|length, 5) %}
         {{ chave_pix[i:i+5] }}{% if not loop.last %} {% endif %}
       {% endfor %}
     </div>
     <br>
-    <button class="btn btn-adnipo mt-3" onclick="copiarChave()">Copiar Chave</button>
+    <button class="btn btn-adnipo rounded-pill mt-3 px-4" onclick="copiarChave()">
+      Copiar Chave
+    </button>
   </div>
 
   <div class="mb-4">
-    <img src="{{ qr_code_url }}" alt="QR Code Pix" class="img-fluid" style="max-width: 250px;">
+    <img src="{{ qr_code_url }}" alt="QR Code Pix" class="img-fluid rounded-4" style="max-width: 250px;">
   </div>
 
   <p class="text-muted">Deus te abençoe pela sua generosidade ❤️</p>
-  <a href="{{ url_for('admin_home') }}" class="btn btn-secondary">
-    <i class="fas fa-arrow-left"></i> Voltar
+  <a href="{{ url_for('admin_home') }}" class="btn btn-secondary rounded-pill px-4">
+    <i class="fas fa-arrow-left me-2"></i> Voltar
   </a>
 </div>
 

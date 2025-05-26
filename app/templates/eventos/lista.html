@@ -1,125 +1,120 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">📅 Lista de Eventos</h1>
-        <div>
+<div class="container my-4">
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold text-adnipo mb-3 mb-md-0">📅 Lista de Eventos</h1>
+    <div>
+      {% if usuario_logado and usuario_logado.is_admin %}
+        <a href="{{ url_for('novo_evento') }}" class="btn btn-adnipo rounded-pill me-2 mb-2">
+          <i class="bi bi-plus-circle me-1"></i> Novo Evento
+        </a>
+      {% endif %}
+      <a href="{{ url_for('admin_home') }}" class="btn btn-secondary rounded-pill mb-2">
+        <i class="fas fa-arrow-left me-1"></i> Voltar
+      </a>
+    </div>
+  </div>
+
+  {% if aviso %}
+    <div class="alert alert-warning text-center shadow-sm rounded-pill" role="alert">
+      {{ aviso }}
+    </div>
+  {% endif %}
+
+  {% if eventos %}
+    <div class="row g-4">
+      {% for e in eventos %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card shadow-sm border-0 h-100 d-flex flex-column">
+            
             {% if usuario_logado and usuario_logado.is_admin %}
-            <a href="{{ url_for('novo_evento') }}" class="btn btn-adnipo">
-                <i class="bi bi-plus-circle me-1"></i> Novo Evento
-            </a>
-            <a href="{{ url_for('admin_home') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </a>
-            {% else %}
-            <a href="{{ url_for('admin_home') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </a>
-            {% endif %}
-        </div>
-    </div>
-
-    {% if aviso %}
-    <div class="alert alert-warning" role="alert">
-        {{ aviso }}
-    </div>
-    {% endif %}
-
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Título</th>
-                            <th>Data e Hora</th>
-                            <th>Local</th>
-                            <th>Descrição</th>
-                            {% if usuario_logado and usuario_logado.is_admin %}
-                            <th class="text-center">Ativo</th>
-                            <th class="text-center">Ações</th>
-                            <th class="text-center">Presenças</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for e in eventos %}
-                        <tr>
-                            <td>{{ e.titulo }}</td>
-                            <td>{{ e.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
-                            <td>{{ e.local }}</td>
-                            <td>{{ e.descricao }}</td>
-                            {% if usuario_logado and usuario_logado.is_admin %}
-                            <td class="text-center">
-                                <form action="{{ url_for('toggle_evento', evento_id=e.id) }}" method="post" style="display:inline;">
-                                    <div class="form-check form-switch d-flex justify-content-center">
-                                        <input class="form-check-input" type="checkbox" name="ativo"
-                                               onChange="this.form.submit()" {% if e.ativo %}checked{% endif %}
-                                               data-bs-toggle="tooltip" title="Ativar/Desativar este evento">
-                                    </div>
-                                </form>
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <a href="{{ url_for('editar_evento', evento_id=e.id) }}" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ url_for('excluir_evento', evento_id=e.id) }}" method="post" onsubmit="return confirmarExclusao();" style="display:inline;">
-                                        <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Excluir">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <!-- REMOVIDO link para 'acompanhar_presencas' conforme solicitado -->
-                                    <a href="{{ url_for('gerar_qrcode_evento', evento_id=e.id) }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="QR Code Check-in">
-                                        📱
-                                    </a>
-                                </div>
-                            </td>
-                            {% endif %}
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="7" class="text-center">Nenhum evento encontrado.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="card-header d-flex justify-content-between align-items-center py-2 px-3">
+              
+              <form action="{{ url_for('toggle_evento', evento_id=e.id) }}" method="post" class="d-flex align-items-center me-3" data-bs-toggle="tooltip" title="Ativar/Desativar este evento">
+                <div class="form-check form-switch m-0">
+                  <input class="form-check-input" type="checkbox" name="ativo" onChange="this.form.submit()" {% if e.ativo %}checked{% endif %}>
+                </div>
+              </form>
+              
+              <div class="btn-group" role="group" aria-label="Ações do evento">
+                <a href="{{ url_for('editar_evento', evento_id=e.id) }}"
+                   class="btn btn-warning btn-sm rounded-pill"
+                   data-bs-toggle="tooltip" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form action="{{ url_for('excluir_evento', evento_id=e.id) }}"
+                      method="post" onsubmit="return confirmarExclusao();"
+                      style="display:inline;">
+                  <button type="submit"
+                          class="btn btn-danger btn-sm rounded-pill"
+                          data-bs-toggle="tooltip" title="Excluir">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </form>
+                <a href="{{ url_for('gerar_qrcode_evento', evento_id=e.id) }}"
+                   class="btn btn-info btn-sm rounded-pill"
+                   data-bs-toggle="tooltip" title="QR Code Check-in">
+                  📱
+                </a>
+              </div>
             </div>
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title fw-bold">{{ e.titulo }}</h5>
+              <p class="card-text mb-1"><strong>Data e Hora:</strong> {{ e.data_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+              <p class="card-text mb-1"><strong>Local:</strong> {{ e.local }}</p>
+              <p class="card-text flex-grow-1"><strong>Descrição:</strong> {{ e.descricao }}</p>
+            </div>
+          </div>
         </div>
+      {% endfor %}
     </div>
+  {% else %}
+    <div class="alert alert-info text-center mt-5" role="alert">
+      Nenhum evento encontrado.
+    </div>
+  {% endif %}
+
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
 function confirmarExclusao() {
-    return confirm("Tem certeza que deseja excluir esta reunião?");
+  return confirm("Tem certeza que deseja excluir esta reunião?");
 }
 
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-    new bootstrap.Tooltip(tooltipTriggerEl)
+  new bootstrap.Tooltip(tooltipTriggerEl)
 })
 </script>
 {% endblock %}
 
 <style>
-.table th, .table td {
-    vertical-align: middle;
+.card {
+  border-radius: 1rem;
 }
-.table thead th {
-    text-align: center;
+.form-check-input {
+  cursor: pointer;
 }
-.btn-group .btn {
-    margin-right: 4px;
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
 }
-.pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+@media (max-width: 576px) {
+  .btn-group {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    justify-content: center;
+  }
+  .btn-group .btn {
+    flex: 1 1 auto;
+  }
 }
 </style>

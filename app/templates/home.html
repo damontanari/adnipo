@@ -156,6 +156,11 @@
             <h5 class="card-title">{{ e.titulo }}</h5>
             <p class="card-text">{{ e.descricao }}</p>
             <p class="card-text">
+              {% if e.publicos %}
+                {% for p in e.publicos %}
+                  <i class="bi bi-eye-fill"></i> {{ p.nome }}<br>
+                {% endfor %}
+              {% endif %}
               <i class="bi bi-calendar-event me-1"></i> {{ e.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
               <i class="bi bi-geo-alt me-1"></i> {{ e.local }}
             </p>

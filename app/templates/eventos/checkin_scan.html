@@ -1,55 +1,56 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4 text-center">
-    <h1>Fazer Check-in</h1>
-    <p>Escaneie o QR Code do evento para registrar sua presença.</p>
+<div class="container my-5 text-center">
+  <h1 class="fw-bold text-adnipo mb-3">📸 Fazer Check-in</h1>
+  <p class="lead mb-4">Aponte a câmera para o QR Code do evento e registre sua presença.</p>
 
-    <div id="qr-reader" style="width: 100%; max-width: 400px; margin: auto;"></div>
+  <div id="qr-reader" class="border rounded-4 shadow-sm mx-auto mb-3"
+       style="width: 100%; max-width: 360px; aspect-ratio: 1/1; overflow: hidden;"></div>
 
-    <div id="msg" class="mt-3"></div>
+  <div id="msg" class="mt-3"></div>
 
-    <a href="{{ url_for('listar_eventos') }}" class="btn btn-secondary mt-4">
-        <i class="fas fa-arrow-left"></i> Voltar para Eventos
-    </a>
+  <a href="{{ url_for('listar_eventos') }}" class="btn btn-secondary rounded-pill px-4 mt-4">
+    <i class="fas fa-arrow-left me-1"></i> Voltar para Eventos
+  </a>
 </div>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
-    const qrReader = document.getElementById('qr-reader');
-    const msg = document.getElementById('msg');
+  const qrReader = document.getElementById('qr-reader');
+  const msg = document.getElementById('msg');
 
-    let scanner = new Html5Qrcode("qr-reader");
+  let scanner = new Html5Qrcode("qr-reader");
 
-    scanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        qrCodeMessage => {
-            try {
-                const url = new URL(qrCodeMessage);
-                const path = url.pathname;
-                const parts = path.split('/');
-                const eventoId = parts[parts.length - 1];
-                if(eventoId && !isNaN(eventoId)) {
-                    scanner.stop().then(() => {
-                        msg.innerHTML = `<div class="alert alert-success">Evento detectado! Redirecionando...</div>`;
-                        setTimeout(() => {
-                            window.location.href = '/checkin/publico/' + eventoId;
-                        }, 1500);
-                    });
-                } else {
-                    msg.innerHTML = `<div class="alert alert-danger">QR Code inválido para este sistema.</div>`;
-                }
-            } catch(e) {
-                msg.innerHTML = `<div class="alert alert-danger">QR Code inválido ou não contém uma URL.</div>`;
-            }
-        },
-        errorMessage => {
-            // Pode ignorar erros pequenos do scanner aqui
+  scanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 240 },
+    qrCodeMessage => {
+      try {
+        const url = new URL(qrCodeMessage);
+        const path = url.pathname;
+        const parts = path.split('/');
+        const eventoId = parts[parts.length - 1];
+        if (eventoId && !isNaN(eventoId)) {
+          scanner.stop().then(() => {
+            msg.innerHTML = `<div class="alert alert-success">✅ Evento detectado! Redirecionando...</div>`;
+            setTimeout(() => {
+              window.location.href = '/checkin/publico/' + eventoId;
+            }, 1500);
+          });
+        } else {
+          msg.innerHTML = `<div class="alert alert-danger">🚫 QR Code inválido para este sistema.</div>`;
         }
-    ).catch(err => {
-        msg.innerHTML = `<div class="alert alert-danger">Erro ao acessar a câmera: ${err}</div>`;
-    });
+      } catch (e) {
+        msg.innerHTML = `<div class="alert alert-danger">🚫 QR Code inválido ou não contém uma URL.</div>`;
+      }
+    },
+    errorMessage => {
+      // Erros de leitura ignorados por padrão
+    }
+  ).catch(err => {
+    msg.innerHTML = `<div class="alert alert-danger">⚠️ Erro ao acessar a câmera: ${err}</div>`;
+  });
 </script>
 {% endblock %}

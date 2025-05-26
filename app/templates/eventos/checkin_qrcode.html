@@ -1,22 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4 text-center">📥 Check-in — {{ evento.titulo }}</h1>
-    <p class="text-center">Selecione seu nome para registrar sua presença:</p>
+<div class="container my-5">
+  <h1 class="text-center fw-bold text-adnipo mb-3">📥 Check-in</h1>
+  <h5 class="text-center mb-4">{{ evento.titulo }}</h5>
+  <p class="text-center mb-4">Selecione seu nome abaixo para confirmar presença:</p>
 
-    <div class="list-group mx-auto" style="max-width: 400px;">
-        {% for m in membros %}
-        <a href="{{ url_for('checkin_presenca', membro_id=m.id, evento_id=evento.id) }}" class="list-group-item list-group-item-action">
-            {{ m.nome }}
-        </a>
-        {% endfor %}
-    </div>
+  <div class="list-group mx-auto shadow-sm rounded-4 overflow-hidden" style="max-width: 420px;">
+    {% for m in membros %}
+    <a href="{{ url_for('checkin_presenca', membro_id=m.id, evento_id=evento.id) }}"
+       class="list-group-item list-group-item-action py-3">
+      {{ m.nome }}
+    </a>
+    {% else %}
+    <div class="list-group-item text-center text-muted">Nenhum membro disponível.</div>
+    {% endfor %}
+  </div>
 
-    <div class="text-center mt-4">
-        <a href="{{ url_for('admin_home') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Voltar
-        </a>
-    </div>
+  <div class="text-center mt-4">
+    <a href="{{ url_for('admin_home') }}" class="btn btn-secondary rounded-pill px-4">
+      <i class="fas fa-arrow-left me-1"></i> Voltar
+    </a>
+  </div>
 </div>
 {% endblock %}

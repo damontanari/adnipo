@@ -3,8 +3,8 @@
 {% block content %}
 <!-- Botões -->
 <div class="text-end mt-4">
-  <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary ms-2">
-    <i class="bi bi-arrow-left-circle"></i> Início
+  <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary ms-2 rounded-pill">
+    <i class="bi bi-arrow-left-circle me-1"></i> Início
   </a>
 </div>
 
@@ -16,7 +16,7 @@
     {% if visitantes %}
       <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-3">
         <span class="badge bg-success fs-6 px-3 py-2 rounded-pill">Total: {{ visitantes|length }}</span>
-        <a href="{{ url_for('exportar_visitantes') }}" class="btn btn-adnipo">
+        <a href="{{ url_for('exportar_visitantes') }}" class="btn btn-adnipo rounded-pill">
           <i class="bi bi-file-earmark-spreadsheet me-2"></i> Exportar Dados
         </a>
       </div>
@@ -26,8 +26,8 @@
   {% if visitantes %}
     <div class="row mt-4">
       {% for v in visitantes %}
-        <div class="col-md-4 mb-4">
-          <div class="card shadow-sm border-0 h-100">
+        <div class="col-md-4 col-sm-6 mb-4">
+          <div class="card shadow-sm border-0 h-100 rounded-4">
             <div class="card-body text-center">
               <i class="bi bi-emoji-smile-fill text-warning mb-3" style="font-size: 3rem;"></i>
               <h5 class="card-title fw-bold">{{ v.nome }}</h5>

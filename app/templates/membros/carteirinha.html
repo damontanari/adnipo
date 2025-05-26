@@ -5,35 +5,40 @@
 
 <!-- Botões -->
 <div class="text-end mt-4">
-  <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary ms-2">
-    <i class="bi bi-arrow-left-circle"></i> Início
+  <a href="{{ url_for('admin_home') }}" class="btn btn-outline-secondary rounded-pill px-3">
+    <i class="bi bi-arrow-left-circle me-1"></i> Início
   </a>
 </div>
 
-<div class="card mx-auto mt-5" style="max-width: 350px; border-radius: 15px;">
-  <div class="card-header text-center bg-adnipo text-white">
-    <h4>ADNIPO</h4>
+<div class="card mx-auto mt-5 shadow" style="max-width: 360px; border-radius: 18px;">
+  <div class="card-header text-center bg-adnipo text-white" style="border-top-left-radius: 18px; border-top-right-radius: 18px;">
+    <h4 class="mb-0">ADNIPO</h4>
     <small>Carteira de Membro</small>
   </div>
-  <div class="card-body text-center">
+
+  <div class="card-body text-center py-4">
     <img src="{{ url_for('static', filename='img/logo-carteirinha.png') }}" class="mb-3" style="width: 80px;" alt="Logo">
-    <h5>{{ membro.nome }}</h5>
-    <p class="text-muted">{{ membro.oficio }}</p>
-    <p><strong>Telefone:</strong> {{ membro.telefone }}</p>
-    <p><strong>Email:</strong> {{ membro.email }}</p>
-    <p><strong>Data Batismo:</strong> 
+
+    <h5 class="fw-bold">{{ membro.nome }}</h5>
+    <p class="text-muted mb-1">{{ membro.oficio }}</p>
+    <p class="mb-1"><strong>📞 Telefone:</strong> {{ membro.telefone }}</p>
+    <p class="mb-1"><strong>📧 Email:</strong> {{ membro.email }}</p>
+    <p class="mb-3"><strong>📆 Batismo:</strong>
       {% if membro.data_batismo %}
         {{ membro.data_batismo.strftime('%d/%m/%Y') }}
       {% else %}
         Não batizado
       {% endif %}
     </p>
-    <hr>
-    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="mb-3" style="width: 120px; height: 120px;">
-    <hr>
+
+    <hr class="my-3">
+
+    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="mb-3" style="width: 130px; height: 130px;">
+
+    <hr class="my-3">
+
     <small class="text-muted">Emitido em {{ membro.data_cadastro.strftime('%d/%m/%Y') }}</small>
   </div>
 </div>
-
 
 {% endblock %}
