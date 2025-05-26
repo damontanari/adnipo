@@ -13,6 +13,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app.utils import allowed_file
 import requests
 import random
+import csv
+from io import StringIO
 
 # Função para recuperar o usuário logado
 def get_usuario_logado():
@@ -975,6 +977,33 @@ def configure_routes(app):
 
 
     @app.route('/visitantes')
+    @login_requerido
+    @admin_requerido
     def listar_visitantes():
         visitantes = VisitanteLead.query.order_by(VisitanteLead.data_cadastro.desc()).all()
-        return render_template('visitantes.html', visitantes=visitantes)
+        return render_template('membros/visitantes.html', visitantes=visitantes)
+    
+    @app.route('/exportar_visitantes')
+    @login_requerido
+    @admin_requerido
+    def exportar_visitantes():
+        from io import BytesIO
+        import pandas as pd
+        from flask import send_file
+
+        visitantes = VisitanteLead.query.order_by(VisitanteLead.data_cadastro.desc()).all()
+
+        data = [{
+            'ID': v.id,
+            'Nome': v.nome,
+            'Telefone': v.telefone,
+            'Data de Cadastro': v.data_cadastro.strftime('%d/%m/%Y %H:%M')
+        } for v in visitantes]
+
+        df = pd.DataFrame(data)
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Visitantes')
+
+        output.seek(0)
+        return send_file(output, download_name='visitantes.xlsx', as_attachment=True)

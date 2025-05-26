@@ -3,28 +3,37 @@
 {% block content %}
 
 <div class="container my-5">
-  <div class="text-center mb-5">
+  <div class="text-center mb-4">
     <h1 class="fw-bold text-adnipo">📋 Visitantes Cadastrados</h1>
     <p class="lead">Aqui estão os nomes e telefones captados pelo formulário de boas-vindas.</p>
+
+    {% if visitantes %}
+      <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-3">
+        <span class="badge bg-success fs-6 px-3 py-2 rounded-pill">Total: {{ visitantes|length }}</span>
+        <a href="{{ url_for('exportar_visitantes') }}" class="btn btn-adnipo">
+          <i class="bi bi-file-earmark-spreadsheet me-2"></i> Exportar Dados
+        </a>
+      </div>
+    {% endif %}
   </div>
 
   {% if visitantes %}
-    <div class="row">
+    <div class="row mt-4">
       {% for v in visitantes %}
-      <div class="col-md-4 mb-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center">
-            <i class="bi bi-emoji-smile-fill text-warning mb-3" style="font-size: 3rem;"></i>
-            <h5 class="card-title fw-bold">{{ v.nome }}</h5>
-            <p class="card-text fs-5"><i class="bi bi-telephone-fill me-2"></i>{{ v.telefone }}</p>
-            <small class="text-muted">📅 {{ v.data_cadastro.strftime('%d/%m/%Y %H:%M') }}</small>
+        <div class="col-md-4 mb-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+              <i class="bi bi-emoji-smile-fill text-warning mb-3" style="font-size: 3rem;"></i>
+              <h5 class="card-title fw-bold">{{ v.nome }}</h5>
+              <p class="card-text fs-5"><i class="bi bi-telephone-fill me-2"></i>{{ v.telefone }}</p>
+              <small class="text-muted">📅 {{ v.data_cadastro.strftime('%d/%m/%Y %H:%M') }}</small>
+            </div>
           </div>
         </div>
-      </div>
       {% endfor %}
     </div>
   {% else %}
-    <div class="alert alert-warning text-center" role="alert">
+    <div class="alert alert-warning text-center mt-5" role="alert">
       Nenhum visitante cadastrado ainda.
     </div>
   {% endif %}
