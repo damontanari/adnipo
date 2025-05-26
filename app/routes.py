@@ -972,3 +972,9 @@ def configure_routes(app):
 
         flash(f'Obrigado, {nome}! Seus dados foram registrados com sucesso!', 'success')
         return redirect(request.referrer)
+
+
+    @app.route('/visitantes')
+    def listar_visitantes():
+        visitantes = VisitanteLead.query.order_by(VisitanteLead.data_cadastro.desc()).all()
+        return render_template('visitantes.html', visitantes=visitantes)

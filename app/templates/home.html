@@ -3,194 +3,165 @@
 {% block content %}
 
 <div class="container my-5">
-    <div class="text-center mb-5">
-        <h1>Bem-vindo(a), {{ usuario_logado.nome }}!</h1>
-        <p class="lead">Este é o Painel Administrativo da Assembleia de Deus Nipo Brasileira - ADNIPO.</p>
-        <!-- <hr class="my-4"> -->
-    </div>
+  <div class="text-center mb-5">
+    <h1>Bem-vindo(a), {{ usuario_logado.nome }}!</h1>
+    <p class="lead">Este é o Painel Administrativo da Assembleia de Deus Nipo Brasileira - ADNIPO.</p>
+  </div>
 
-    <div class="card mb-4 p-3 shadow-sm">
-      <h5 class="card-title mb-2">📖 Versículo para Você!</h5>
-      <p class="mb-1 fw-bold text-primary">{{ versiculo.reference }}</p>
-      <p class="card-text text-wrap" style="word-break: break-word;">
-        "{{ versiculo.text }}"
-      </p>
-      <!-- <small class="text-muted d-block">Tradução: {{ versiculo.translation_name }}</small> -->
-    </div>
+  <!-- Versículo -->
+  <div class="card mb-4 p-3 shadow-sm border-0 rounded-4 bg-light">
+    <h5 class="card-title mb-2"><i class="bi bi-book me-2"></i>Versículo para Você</h5>
+    <p class="mb-1 fw-bold text-primary">{{ versiculo.reference }}</p>
+    <p class="card-text">"{{ versiculo.text }}"</p>
+  </div>
 
-
-
-    <div class="row">
+  <div class="row g-4">
 
     {% if usuario_logado.is_admin %}
-      <!-- Cards para admin -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0">
-          <div class="card-body">
-            <h5 class="card-title">📋 Gerenciar Membros</h5>
-            <p class="card-text">Visualize, cadastre, edite e exclua informações de membros da igreja.</p>
-            <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Acessar</a>
+    <!-- Painel Admin -->
+    <div class="col-12">
+      <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3"><i class="bi bi-shield-lock me-2"></i>Área Administrativa</h5>
+          <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+              <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Visualizar e editar membros">
+                <i class="bi bi-people-fill me-1"></i>Membros
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Ver estatísticas">
+                <i class="bi bi-bar-chart-line-fill me-1"></i>Relatórios
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <a href="{{ url_for('novo_membro') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Cadastrar novo membro">
+                <i class="bi bi-person-plus-fill me-1"></i>Novo Membro
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <a href="{{ url_for('novo_recado') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Adicionar novo recado">
+                <i class="bi bi-pencil-square me-1"></i>Novo Recado
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <a href="{{ url_for('novo_evento') }}" class="btn btn-adnipo w-100" data-bs-toggle="tooltip" title="Cadastrar novo evento">
+                <i class="bi bi-calendar-plus me-1"></i>Novo Evento
+              </a>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0">
-          <div class="card-body">
-            <h5 class="card-title">📊 Relatórios e Estatísticas</h5>
-            <p class="card-text">Veja estatísticas de membros por cidade, ofício e muito mais.</p>
-            <a href="{{ url_for('listar_membros') }}" class="btn btn-adnipo btn-sm">Ver Relatórios</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0">
-          <div class="card-body">
-            <h5 class="card-title">➕ Novo Membro</h5>
-            <p class="card-text">Adicione novos membros ao cadastro com informações completas.</p>
-            <a href="{{ url_for('novo_membro') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0">
-          <div class="card-body">
-            <h5 class="card-title">📝 Novo Recado</h5>
-            <p class="card-text">Adicione um novo recado para os membros.</p>
-            <a href="{{ url_for('novo_recado') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0">
-          <div class="card-body">
-            <h5 class="card-title">📅 Novo Evento</h5>
-            <p class="card-text">Adicione um novo evento com informações completas.</p>
-            <a href="{{ url_for('novo_evento') }}" class="btn btn-adnipo btn-sm">Cadastrar</a>
-          </div>
-        </div>
-      </div>
+    </div>
     {% endif %}
 
     {% if not usuario_logado.is_admin and usuario_logado.membro %}
-      <!-- Card de carteirinha -->
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm border-0">
-          <div class="card-body">
-            <h5 class="card-title">🪪 Minha Carteirinha</h5>
-            <p class="card-text">Visualize sua carteirinha digital com QR Code.</p>
-            <a href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro.id) }}" class="btn btn-adnipo btn-sm">Ver Carteirinha</a>
-          </div>
+    <!-- Carteirinha -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><i class="bi bi-credit-card-2-front-fill me-2"></i>Minha Carteirinha</h5>
+          <p class="card-text flex-grow-1">Visualize sua carteirinha digital com QR Code.</p>
+          <a href="{{ url_for('carteirinha_membro', membro_id=usuario_logado.membro.id) }}" class="btn btn-adnipo mt-auto">Ver Carteirinha</a>
         </div>
       </div>
+    </div>
     {% endif %}
 
-    <!-- Card de recados -->
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <h5 class="card-title">📝 Visualizar Recados</h5>
-          <p class="card-text">Confira os recados cadastrados.</p>
-          <a href="{{ url_for('listar_recados') }}" class="btn btn-adnipo btn-sm">Ver Recados</a>
+    <!-- Recados -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><i class="bi bi-chat-left-dots me-2"></i>Recados</h5>
+          <p class="card-text flex-grow-1">Confira os recados cadastrados.</p>
+          <a href="{{ url_for('listar_recados') }}" class="btn btn-adnipo mt-auto">Ver Recados</a>
         </div>
       </div>
     </div>
 
-    <!-- Card de eventos -->
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <h5 class="card-title">📅 Visualizar Eventos</h5>
-          <p class="card-text">Confira os próximos eventos.</p>
-          <a href="{{ url_for('listar_eventos') }}" class="btn btn-adnipo btn-sm">Ver Eventos</a>
+    <!-- Eventos -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><i class="bi bi-calendar-event-fill me-2"></i>Eventos</h5>
+          <p class="card-text flex-grow-1">Confira os próximos eventos.</p>
+          <a href="{{ url_for('listar_eventos') }}" class="btn btn-adnipo mt-auto">Ver Eventos</a>
         </div>
       </div>
     </div>
 
-    <!-- Card de Oferta/Dizimo -->
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <h5 class="card-title">💸 Ofertar/Dizimar</h5>
-          <p class="card-text">Faça sua oferta ou dizime por Pix ou QR Code.</p>
-          <a href="{{ url_for('oferta_pix') }}" class="btn btn-adnipo btn-sm">Ofertar/Dizimar</a>
+    <!-- Ofertar -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><i class="bi bi-cash-coin me-2"></i>Ofertar/Dizimar</h5>
+          <p class="card-text flex-grow-1">Faça sua oferta ou dízimo por Pix ou QR Code.</p>
+          <a href="{{ url_for('oferta_pix') }}" class="btn btn-adnipo mt-auto">Ofertar</a>
         </div>
       </div>
     </div>
 
-    <!-- Card de Oferta/Dizimo -->
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <h5 class="card-title">✅ Fazer Check-in</h5>
-          <p class="card-text">Confirme sua presença nos Eventos/Reuniões ativas.</p>
+    <!-- Check-in -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><i class="bi bi-check2-circle me-2"></i>Check-in</h5>
+          <p class="card-text flex-grow-1">Confirme sua presença nos eventos/reuniões ativas.</p>
           {% if evento_ativo %}
-            <a href="{{ url_for('checkin_scan') }}" class="btn btn-adnipo btn-sm">Fazer Check-in</a>
+          <a href="{{ url_for('checkin_scan') }}" class="btn btn-adnipo mt-auto">Fazer Check-in</a>
           {% else %}
-            <p>Nenhum evento ativo no momento.</p>
+          <p class="text-muted">Nenhum evento ativo no momento.</p>
           {% endif %}
         </div>
       </div>
     </div>
 
-    <!-- Card de logout -->
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <h5 class="card-title">🚪 Sair</h5>
-          <p class="card-text">Encerrar sua sessão e retornar para a área pública do site.</p>
-          <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
+    <!-- Visitantes -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><i class="bi bi-eye-fill me-2"></i>Visitantes</h5>
+          <p class="card-text flex-grow-1">Veja quem preencheu o cadastro de boas-vindas.</p>
+          <a href="{{ url_for('listar_visitantes') }}" class="btn btn-adnipo mt-auto">Ver Visitantes</a>
         </div>
       </div>
+    </div>
+
+  </div>
+
+  <!-- Calendário -->
+  <div class="card my-5 shadow-sm border-0 rounded-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3"><i class="bi bi-calendar3 me-2"></i>Próximos Eventos</h5>
+      <div id="calendar"></div>
     </div>
   </div>
 
-    <!-- Card de Eventos -->
-    <div class="card mb-4" style="border-radius: 15px;">
-      <div class="card-body">
-        <h5 class="card-title">🟢 Próximos Eventos em Geral</h5>
-        <div id="calendar"></div>
-      </div>
-    </div>
-
-    <!-- Card de Próxima Reunião -->
-    {% if eventos %}
-    <div class="row">
-      {% for e in eventos %}
-        {% if e.ativo %}
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-sm border-0 position-relative" style="border-radius: 15px;">
-
-            <!-- Badge fixa no canto superior direito -->
-            <span class="badge bg-success position-absolute" style="top: 10px; right: 10px; z-index: 10; font-size: 0.8rem;">
-              ✅ Ativo
-            </span>
-
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ e.titulo }}</h5>
-              <p class="card-text flex-grow-1">{{ e.descricao }}</p>
-              <p class="card-text">
-                {% if e.publicos %}
-                  {% for p in e.publicos %}
-                    <i class="bi bi-person-fill-lock"></i> {{ p.nome }}<br>
-                  {% endfor %}
-                {% endif %}
-                <i class="bi bi-calendar-event"></i> {{ e.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
-                <i class="bi bi-geo-alt"></i> {{ e.local }}
-              </p>
-              <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ e.titulo }}&dates={{ e.data_hora.strftime('%Y%m%dT%H%M%S') }}/{{ e.data_hora.strftime('%Y%m%dT%H%M%S') }}&details={{ e.descricao }}&location={{ e.local }}" target="_blank" class="btn btn-adnipo mt-auto">
-                Adicionar ao Google Agenda
-              </a>
-            </div>
+  {% if eventos %}
+  <div class="row g-4">
+    {% for e in eventos %}
+      {% if e.ativo %}
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-4 h-100 position-relative">
+          <span class="badge bg-success position-absolute top-0 end-0 m-2">Ativo</span>
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ e.titulo }}</h5>
+            <p class="card-text">{{ e.descricao }}</p>
+            <p class="card-text">
+              <i class="bi bi-calendar-event me-1"></i> {{ e.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
+              <i class="bi bi-geo-alt me-1"></i> {{ e.local }}
+            </p>
+            <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ e.titulo }}&dates={{ e.data_hora.strftime('%Y%m%dT%H%M%S') }}/{{ e.data_hora.strftime('%Y%m%dT%H%M%S') }}&details={{ e.descricao }}&location={{ e.local }}" target="_blank" class="btn btn-adnipo mt-auto">
+              <i class="bi bi-calendar-plus me-1"></i>Adicionar ao Google Agenda
+            </a>
           </div>
         </div>
-        {% endif %}
-      {% endfor %}
-    </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
   {% else %}
-    <h5 class="card-title">Nenhum evento agendado.</h5>
-    <p class="card-text">Atualmente não há eventos ativos...</p>
+  <div class="alert alert-info mt-4">Nenhum evento agendado.</div>
   {% endif %}
 
 </div>
@@ -201,12 +172,9 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.min.js'></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
-
     if (calendarEl) {
-      calendarEl.style.minHeight = '0px'; // garante altura no JS também
-
       var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'pt-br',
@@ -216,21 +184,12 @@
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,listWeek'
         },
-        events: {
-          url: '/api/eventos',
-          failure: function() {
-            alert('Erro ao carregar os eventos 😢');
-          }
-        },
-        eventClick: function(info) {
+        events: '/api/eventos',
+        eventClick: function (info) {
           info.jsEvent.preventDefault();
-
-          alert(
-            '📌 Evento: ' + info.event.title + '\n\n📝 Descrição: ' + (info.event.extendedProps.description || 'Sem descrição')
-          );
+          alert('📌 Evento: ' + info.event.title + '\n📝 ' + (info.event.extendedProps.description || 'Sem descrição'));
         }
       });
-
       calendar.render();
     }
   });
