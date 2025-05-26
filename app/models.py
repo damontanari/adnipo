@@ -168,6 +168,16 @@ class Presenca(db.Model):
 
     membro = db.relationship('Membro', backref='presencas')
     evento = db.relationship('Evento', backref='presencas')
+    
 
+class VisitanteLead(db.Model):
+    __tablename__ = 'visitantes_leads'
 
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(120), nullable=False)
+    telefone = db.Column(db.String(20), nullable=False)
+    data_cadastro = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<VisitanteLead {self.nome}>'
 

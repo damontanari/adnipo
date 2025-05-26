@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from app import db
-from app.models import Membro, Usuario, Evento, Publico, Recado, Presenca
+from app.models import Membro, Usuario, Evento, Publico, Recado, Presenca, VisitanteLead
 from datetime import datetime, timedelta
 from functools import wraps
 import qrcode
@@ -947,3 +947,24 @@ def configure_routes(app):
                         return redirect(url_for('checkin_publico', evento_id=evento.id))
 
         return render_template('eventos/checkin_publico.html', evento=evento, membro=membro)
+
+
+
+    # Captar Visitantes
+    @app.route('/cadastro-visitante', methods=['POST'])
+    def cadastro_visitante():
+        nome = request.form.get('nomeVisitante')
+        telefone = request.form.get('telefoneVisitante')
+
+        # Validação básica
+        if not nome or not telefone:
+            flash('Por favor, preencha todos os campos.', 'danger')
+            return redirect(request.referrer)
+
+        # Salvar no banco
+        novo_visitante = VisitanteLead(nome=nome, telefone=telefone)
+        db.session.add(novo_visitante)
+        db.session.commit()
+
+        flash(f'Obrigado, {nome}! Seus dados foram registrados com sucesso!', 'success')
+        return redirect(request.referrer)

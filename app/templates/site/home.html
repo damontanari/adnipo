@@ -53,15 +53,81 @@
   </div>
 </div>
 
-<!-- Horários de Culto -->
+<!-- Horários de Culto em Grid -->
 <div class="mb-5">
-  <h2 class="fw-bold mb-3 text-adnipo">Horários de Culto</h2>
-  <ul class="list-group list-group-flush fs-5">
-    <li class="list-group-item"><i class="bi bi-calendar-event-fill text-adnipo me-2"></i>Domingo - Culto da Família: <strong>19h00</strong></li>
-    <li class="list-group-item"><i class="bi bi-calendar-event-fill text-adnipo me-2"></i>Terça-feira - Culto de Oração: <strong>20h00</strong></li>
-    <li class="list-group-item"><i class="bi bi-calendar-event-fill text-adnipo me-2"></i>Quinta-feira - Culto de Ensino: <strong>20h00</strong></li>
-  </ul>
+  <h2 class="fw-bold mb-4 text-adnipo">Horários de Cultos & Atividades</h2>
+  <div class="row g-3">
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-calendar-event-fill text-adnipo me-2"></i>Domingo</h5>
+          <p class="card-text mb-1">Culto da Família</p>
+          <p class="small text-muted mb-2">18h00 às 20h00</p>
+          <span class="badge bg-success">Presencial</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-music-note-beamed text-adnipo me-2"></i>Segunda-Feira</h5>
+          <p class="card-text mb-1">Ensaio Coral</p>
+          <p class="small text-muted mb-2">19h00 às 20h00</p>
+          <span class="badge bg-success">Presencial</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-camera-video-fill text-adnipo me-2"></i>Quarta-Feira</h5>
+          <p class="card-text mb-1">Reunião de Oração</p>
+          <p class="small text-muted mb-2">20h30 às 21h00</p>
+          <span class="badge bg-warning">Online</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-book-fill text-adnipo me-2"></i>Quinta-Feira</h5>
+          <p class="card-text mb-1">Culto da Palavra</p>
+          <p class="small text-muted mb-2">19h45 as 21h00</p>
+          <span class="badge bg-success">Presencial</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-heart-fill text-adnipo me-2"></i>Sexta-Feira</h5>
+          <p class="card-text mb-1">Culto da Fé</p>
+          <p class="small text-muted mb-2">20h00 as 21h00</p>
+          <span class="badge bg-success">Presencial</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-person-arms-up text-adnipo me-2"></i>Sábado</h5>
+          <p class="card-text mb-1">Encontro dos Jovens</p>
+          <p class="small text-muted mb-2">19h30 as 21h00</p>
+          <span class="badge bg-primary">Eventualmente</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+
 
 <!-- Chamada para Contato -->
 <div class="text-center my-5">
@@ -71,6 +137,7 @@
     <i class="bi bi-chat-heart-fill me-2"></i> Entre em Contato
   </a>
 </div>
+
 
 <!-- Galeria de Fotos / Depoimentos -->
 <div class="mt-5">
@@ -134,6 +201,40 @@
     referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
 </div>
+
+
+<!-- Visitantes -->
+<div class="mb-5">
+  <div class="card shadow-lg border-0 bg-light">
+    <div class="card-body text-center p-5">
+      
+      <div class="mb-3">
+        <i class="bi bi-emoji-smile-fill text-warning" style="font-size: 4rem;"></i>
+      </div>
+      
+      <h2 class="fw-bold text-adnipo mb-3">É visitante? Seja muito bem-vindo! 🙌</h2>
+      <p class="fs-5 text-muted">Estamos muito felizes com a sua presença! Preencha abaixo e receba novidades, mensagens e convites especiais da nossa igreja 💖</p>
+      
+      <form class="mt-4" action="/cadastro-visitante" method="POST">
+        <div class="mb-3 text-start">
+          <label for="nomeVisitante" class="bi bi-person-fill form-label fw-semibold"> Seu nome</label>
+          <input type="text" class="form-control rounded-pill px-4 py-3" id="nomeVisitante" placeholder="Ex: Maria Oliveira" required>
+        </div>
+
+        <div class="mb-3 text-start">
+          <label for="telefoneVisitante" class="bi bi-telephone-fill form-label fw-semibold"> Telefone</label>
+          <input type="tel" class="form-control rounded-pill px-4 py-3" id="telefoneVisitante" placeholder="(99) 99999-9999" required>
+        </div>
+
+        <button type="submit" class="btn btn-adnipo w-100 rounded-pill py-3 fs-5 fw-bold mt-3" style="transition: all 0.3s;">
+          Quero receber novidades
+        </button>
+      </form>
+      
+    </div>
+  </div>
+</div>
+
 
 
 <!-- Rodapé -->
