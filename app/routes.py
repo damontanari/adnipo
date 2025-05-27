@@ -1057,10 +1057,27 @@ def configure_routes(app):
         membro = Membro.query.get_or_404(membro_id)
 
         frases = [
-            f"🎉 Parabéns, {membro.nome}! Que Deus continue enchendo sua vida de bênçãos, sorrisos e motivos pra agradecer. 'Este é o dia que o Senhor fez; regozijemo-nos e alegremo-nos nele!' (Salmos 118:24). Aproveite seu dia, porque ele é seu! ✨🙌",
-            f"🎂 Feliz aniversário, {membro.nome}! Que a paz que excede todo entendimento guarde seu coração e sua mente em Cristo Jesus (Filipenses 4:7). Que venham mais anos de vida, saúde e motivos pra rir alto e viver leve! 🎈🙏",
-            f"🎊 Hoje o céu faz festa e a terra celebra sua vida, {membro.nome}! Que o Senhor te cubra de graça e alegria, e que você continue espalhando luz por onde passar. 'A alegria do Senhor é a nossa força!' (Neemias 8:10). Feliz vida! 🌸✨",
-            f"🎉 Parabéns, {membro.nome}! Que seu coração transborde gratidão e alegria, porque Deus é bom e sua fidelidade dura pra sempre (Salmos 100:5). Que seu novo ano venha recheado de sonhos realizados e sorrisos largos! 🙏❤️"
+            f'''Parabéns, {membro.nome}! \n
+            Que Deus continue enchendo sua vida de bênçãos, sorrisos e motivos pra agradecer. \n
+            "Este é o dia que o Senhor fez; regozijemo-nos e alegremo-nos nele!" (Salmos 118:24). \n
+            Aproveite seu dia, porque ele é seu!\n\n
+            Adnipo Marília.''',
+
+            f'''Feliz aniversário, {membro.nome}! \n
+            Que a paz que excede todo entendimento guarde seu coração e sua mente em Cristo Jesus (Filipenses 4:7). \n
+            Que venham mais anos de vida, saúde e motivos pra rir alto e viver leve!\n
+            Adnipo Marília.''',
+
+            f'''Hoje o céu faz festa e a terra celebra sua vida, {membro.nome}! \n
+            Que o Senhor te cubra de graça e alegria, e que você continue espalhando luz por onde passar. \n
+            "A alegria do Senhor é a nossa força!" (Neemias 8:10). \n
+            Feliz vida!\n\n
+            Adnipo Marília.''',
+            
+            f'''Parabéns, {membro.nome}! \n
+            Que seu coração transborde gratidão e alegria, porque Deus é bom e sua fidelidade dura pra sempre (Salmos 100:5). \n
+            Que seu novo ano venha recheado de sonhos realizados e sorrisos largos!\n\n
+            Adnipo Marília.'''
         ]
 
         frase_escolhida = random.choice(frases)
