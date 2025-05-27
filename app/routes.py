@@ -345,7 +345,7 @@ def configure_routes(app):
             db.session.add(novo_usuario)
             db.session.commit()
 
-            flash(f'Membro {novo_membro.nome} cadastrado e usuário criado com senha padrão.', 'success')
+            flash(f'Membro {novo_membro.nome} cadastrado e usuário criado com senha padrão: "adnipo".', 'success')
             return redirect(url_for('listar_membros'))
 
         return render_template('membros/novo.html')
