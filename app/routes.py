@@ -915,7 +915,7 @@ def configure_routes(app):
         evento = Evento.query.get_or_404(evento_id)
 
         # Tenta pegar o membro pelo usuário logado (supondo que user tem membro)
-        membro = get_usuario_logado
+        membro = get_usuario_logado()
 
         if request.method == 'POST':
             # Se usuário logado, usa o membro dele direto
