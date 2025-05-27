@@ -914,42 +914,42 @@ def configure_routes(app):
     def checkin_publico(evento_id):
         evento = Evento.query.get_or_404(evento_id)
 
-        # Tenta pegar o membro pelo usuário logado (supondo que user tem membro)
-        membro = get_usuario_logado()
+        usuario = get_usuario_logado()
+        membro_logado = usuario.membro if usuario else None
 
         if request.method == 'POST':
-            # Se usuário logado, usa o membro dele direto
-            if membro:
-                presenca_existente = Presenca.query.filter_by(membro_id=membro.id, evento_id=evento.id).first()
-                if presenca_existente:
-                    flash("Você já registrou presença neste evento.", "info")
-                else:
-                    nova_presenca = Presenca(membro_id=membro.id, evento_id=evento.id)
-                    db.session.add(nova_presenca)
-                    db.session.commit()
-                    flash("Presença registrada com sucesso!", "success")
-                return redirect(url_for('eventos/checkin_publico', evento_id=evento.id))
+            membro = None
 
-            # Se não logado ou não tiver membro, pede nome no form e procura
-            nome = request.form.get('nome')
-            if not nome:
-                flash("Por favor, preencha o nome.", "warning")
+            # Se usuário logado possui membro vinculado
+            if membro_logado:
+                membro = membro_logado
+
             else:
+                # Tenta pegar o nome enviado no form
+                nome = request.form.get('nome')
+                if not nome:
+                    flash("Por favor, preencha o nome.", "warning")
+                    return redirect(url_for('checkin_publico', evento_id=evento.id))
+
+                # Busca membro pelo nome
                 membro = Membro.query.filter_by(nome=nome).first()
                 if not membro:
                     flash("Membro não encontrado.", "danger")
-                else:
-                    presenca_existente = Presenca.query.filter_by(membro_id=membro.id, evento_id=evento.id).first()
-                    if presenca_existente:
-                        flash("Você já registrou presença neste evento.", "info")
-                    else:
-                        nova_presenca = Presenca(membro_id=membro.id, evento_id=evento.id)
-                        db.session.add(nova_presenca)
-                        db.session.commit()
-                        flash("Presença registrada com sucesso!", "success")
-                        return redirect(url_for('checkin_publico', evento_id=evento.id))
+                    return redirect(url_for('checkin_publico', evento_id=evento.id))
 
-        return render_template('eventos/checkin_publico.html', evento=evento, membro=membro)
+            # Verifica se já registrou presença no evento
+            presenca_existente = Presenca.query.filter_by(membro_id=membro.id, evento_id=evento.id).first()
+            if presenca_existente:
+                flash("Você já registrou presença neste evento.", "info")
+            else:
+                nova_presenca = Presenca(membro_id=membro.id, evento_id=evento.id)
+                db.session.add(nova_presenca)
+                db.session.commit()
+                flash("Presença registrada com sucesso!", "success")
+
+            return redirect(url_for('checkin_publico', evento_id=evento.id))
+
+        return render_template('eventos/checkin_publico.html', evento=evento, membro=membro_logado)
     
 
     @app.route('/eventos/presencas/<int:evento_id>')

@@ -8,9 +8,8 @@
   <div class="text-center text-muted mb-3">
     <p>{{ evento.descricao or "Sem descrição disponível." }}</p>
     <p>
-      <i class="bi bi-calendar-event me-1"></i>{{ evento.data_hora.strftime('%d/%m/%Y %H:%M') }}
-      <br>
-      <i class="bi bi-geo-alt me-1"></i>{{ evento.local or "Local não informado" }}
+      <i class="bi bi-calendar-event me-1"></i> {{ evento.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
+      <i class="bi bi-geo-alt me-1"></i> {{ evento.local or "Local não informado" }}
     </p>
   </div>
 
@@ -34,7 +33,8 @@
     <p class="text-center">Digite seu nome completo para registrar presença:</p>
     <form method="POST" class="mx-auto mt-3" style="max-width: 400px;">
       <div class="mb-3">
-        <input type="text" name="nome" class="form-control form-control-lg" placeholder="Seu nome completo" required autofocus>
+        <label for="nome" class="form-label visually-hidden">Nome completo</label>
+        <input type="text" id="nome" name="nome" class="form-control form-control-lg" placeholder="Seu nome completo" required autofocus>
       </div>
       <button type="submit" class="btn btn-adnipo btn-lg w-100">Registrar Presença</button>
     </form>
@@ -42,7 +42,7 @@
 
   <div class="text-center mt-4">
     <a href="{{ url_for('listar_eventos') }}" class="btn btn-outline-secondary rounded-pill px-4">
-      <i class="fas fa-arrow-left me-1"></i> Voltar para Eventos
+      <i class="bi bi-arrow-left me-1"></i> Voltar para Eventos
     </a>
   </div>
 </div>
