@@ -4,7 +4,7 @@
 <div class="container my-5">
   <div class="text-center mb-4">
     <h1 class="fw-bold text-adnipo">📋 Presenças - {{ evento.titulo }}</h1>
-    <p class="lead">Membros presentes no evento de {{ evento.data_hora.strftime('%d/%m/%Y') }}</p>
+    <p class="lead">Membros presentes no evento de {{ evento.data_hora|formatar_data }}</p>
   </div>
 
   {% if presencas %}
@@ -19,7 +19,7 @@
         {% for presenca in presencas %}
         <tr>
           <td>{{ presenca.membro.nome }}</td>
-          <td>{{ presenca.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+          <td>{{ presenca.data_hora|formatar_data_hora }}</td>
         </tr>
         {% endfor %}
       </tbody>

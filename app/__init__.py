@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import base64
-from io import BytesIO
 from datetime import datetime
 
 # Carregar as variáveis do .env
@@ -14,7 +13,7 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__, template_folder='templates')
 
-    # Configurações...
+    # Configurações
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -27,6 +26,14 @@ def create_app():
     def b64encode_filter(img_io):
         return base64.b64encode(img_io.getvalue()).decode('utf-8')
 
+    # Importar funções de formatação do utils
+    from app.utils import formatar_data, formatar_hora, formatar_data_hora
+
+    # Registrar filtros Jinja para data/hora
+    app.jinja_env.filters['formatar_data'] = formatar_data
+    app.jinja_env.filters['formatar_hora'] = formatar_hora
+    app.jinja_env.filters['formatar_data_hora'] = formatar_data_hora
+
     # Context processor para data/hora atual
     @app.context_processor
     def inject_now():
@@ -36,7 +43,7 @@ def create_app():
     @app.context_processor
     def inject_usuario_logado():
         from flask import session
-        from app.models import Usuario  # ou o caminho certo pro seu model
+        from app.models import Usuario
         usuario = None
         if 'usuario_id' in session:
             usuario = Usuario.query.get(session['usuario_id'])
@@ -50,4 +57,3 @@ def create_app():
     configure_routes(app)
 
     return app
-

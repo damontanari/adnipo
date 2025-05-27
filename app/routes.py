@@ -16,6 +16,14 @@ import random
 import csv
 from io import StringIO
 from urllib.parse import quote
+from pytz import timezone
+
+def formatar_data_hora(data_hora):
+    if data_hora is None:
+        return "Data não informada"
+    fuso_br = timezone('America/Sao_Paulo')
+    return data_hora.astimezone(fuso_br).strftime('%d/%m/%Y %H:%M')
+
 
 # Função para recuperar o usuário logado
 def get_usuario_logado():
