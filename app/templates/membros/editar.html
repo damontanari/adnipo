@@ -21,6 +21,18 @@
           </div>
           <div class="col-md-6">
             <div class="form-floating">
+              <input type="email" name="email" class="form-control" id="email" placeholder="email@exemplo.com" value="{{ membro.email }}">
+              <label for="email">E-mail</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-floating">
+              <input type="text" name="cep" class="form-control cep" id="cep" placeholder="00000-000" pattern="^\d{5}-\d{3}$" value="{{ membro.cep }}">
+              <label for="cep">CEP</label>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="form-floating">
               <input type="text" name="endereco" class="form-control" id="endereco" placeholder="Endereço" value="{{ membro.endereco }}">
               <label for="endereco">Endereço</label>
             </div>
@@ -31,55 +43,44 @@
               <label for="numero">Número</label>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-5">
             <div class="form-floating">
               <input type="text" name="cidade" class="form-control" id="cidade" placeholder="Cidade" value="{{ membro.cidade }}">
               <label for="cidade">Cidade</label>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-2">
             <div class="form-floating">
               <input type="text" name="uf" class="form-control" id="uf" placeholder="UF" value="{{ membro.uf }}">
               <label for="uf">UF</label>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-5">
             <div class="form-floating">
               <input type="text" name="pais" class="form-control" id="pais" placeholder="País" value="{{ membro.pais }}">
               <label for="pais">País</label>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="form-floating">
-              <input type="text" name="cep" class="form-control" id="cep" placeholder="00000-000" pattern="^\d{5}-\d{3}$" value="{{ membro.cep }}">
-              <label for="cep">CEP</label>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-floating">
-              <input type="tel" name="telefone" class="form-control" id="telefone" placeholder="(00) 00000-0000" pattern="^\(\d{2}\)\s\d{4,5}-\d{4}$" value="{{ membro.telefone }}">
+              <input type="text" name="telefone" class="form-control celular" id="telefone" placeholder="(00) 00000-0000" pattern="^\(\d{2}\)\s\d{4,5}-\d{4}$" value="{{ membro.telefone }}">
               <label for="telefone">Telefone</label>
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="form-floating">
-              <input type="email" name="email" class="form-control" id="email" placeholder="email@exemplo.com" value="{{ membro.email }}">
-              <label for="email">E-mail</label>
-            </div>
-          </div>
-          <div class="col-md-4">
+          
+          <div class="col-md-3">
             <div class="form-floating">
               <input type="date" name="data_nascimento" class="form-control" id="data_nascimento" placeholder="Data de Nascimento" value="{{ membro.data_nascimento }}">
               <label for="data_nascimento">Data de Nascimento</label>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-3">
             <div class="form-floating">
               <input type="text" name="naturalidade" class="form-control" id="naturalidade" placeholder="Naturalidade" value="{{ membro.naturalidade }}">
               <label for="naturalidade">Naturalidade</label>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-3">
             <div class="form-floating">
               <select name="sexo" class="form-select" id="sexo">
                 <option value="" {% if not membro.sexo %}selected{% endif %}>Selecione</option>
