@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h1 class="fw-bold text-primary">📋 Presenças - {{ evento.nome }}</h1>
+    <p class="lead">Membros presentes no evento de {{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
+  </div>
+
+  {% if presencas %}
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Nome do Membro</th>
+          <th>Data de Check-in</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for presenca in presencas %}
+        <tr>
+          <td>{{ presenca.membro.nome }}</td>
+          <td>{{ presenca.data_registro.strftime('%d/%m/%Y %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-warning text-center" role="alert">
+      Nenhuma presença registrada neste evento.
+    </div>
+  {% endif %}
+
+  <div class="text-end mt-3">
+    <a href="{{ url_for('listar_eventos') }}" class="btn btn-outline-secondary rounded-pill">
+      <i class="bi bi-arrow-left"></i> Voltar para Eventos
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -950,7 +950,16 @@ def configure_routes(app):
                         return redirect(url_for('checkin_publico', evento_id=evento.id))
 
         return render_template('eventos/checkin_publico.html', evento=evento, membro=membro)
+    
 
+    @app.route('/eventos/presencas/<int:evento_id>')
+    @login_requerido
+    @admin_requerido
+    def listar_presencas(evento_id):
+        evento = Evento.query.get_or_404(evento_id)
+        presencas = Presenca.query.filter_by(evento_id=evento.id).all()
+        
+        return render_template('eventos/listar_presencas.html', evento=evento, presencas=presencas)
 
 
     # Captar Visitantes
