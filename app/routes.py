@@ -215,6 +215,8 @@ def configure_routes(app):
         return redirect(url_for('perfil'))
 
 
+
+    ## Membros
     @app.route('/membros')
     @login_requerido
     @admin_requerido
@@ -703,13 +705,62 @@ def configure_routes(app):
         return redirect(url_for('listar_eventos'))
     
 
+    @app.route('/eventos/toggle/<int:evento_id>', methods=['POST'])
+    @login_requerido
+    @admin_requerido
+    def toggle_evento(evento_id):
+        evento = Evento.query.get_or_404(evento_id)
+
+        evento.ativo = not evento.ativo
+
+        db.session.commit()
+        return redirect(url_for('listar_eventos'))
+    
+
+    # QRCode de evento
+    @app.route('/eventos/qrcode/<int:evento_id>')
+    @login_requerido
+    @admin_requerido
+    def gerar_qrcode_evento(evento_id):
+        evento = Evento.query.get_or_404(evento_id)
+
+        checkin_url = url_for('checkin_publico', evento_id=evento.id, _external=True)
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(checkin_url)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+        return render_template('eventos/qrcode.html', evento=evento, qrcode_image=img_base64)
+    
+
+    @app.route('/eventos/presencas/<int:evento_id>')
+    @login_requerido
+    @admin_requerido
+    def listar_presencas(evento_id):
+        evento = Evento.query.get_or_404(evento_id)
+        presencas = Presenca.query.filter_by(evento_id=evento.id).all()
+        
+        return render_template('eventos/listar_presencas.html', evento=evento, presencas=presencas)
+    
+
     @app.route('/api/eventos')
     def api_eventos():
         usuario_logado = get_usuario_logado()
 
-        if usuario_logado.is_admin:
+        if usuario_logado and usuario_logado.is_admin:
             eventos = Evento.query.order_by(Evento.data_hora.asc()).all()
-        elif usuario_logado.membro:
+        elif usuario_logado and usuario_logado.membro:
             publicos_usuario = [p.id for p in usuario_logado.membro.publicos]
             eventos = Evento.query\
                 .join(Evento.publicos)\
@@ -717,7 +768,12 @@ def configure_routes(app):
                 .order_by(Evento.data_hora.asc())\
                 .all()
         else:
-            eventos = []
+            # Sem login, ou sem membro vinculado — mostra eventos públicos
+            eventos = Evento.query\
+                .join(Evento.publicos)\
+                .filter(Publico.nome == 'Todos')\
+                .order_by(Evento.data_hora.asc())\
+                .all()
 
         eventos_json = [{
             'title': e.titulo,
@@ -727,10 +783,11 @@ def configure_routes(app):
         } for e in eventos]
 
         return jsonify(eventos_json)
+
     
 
-    ## Recados
 
+    ## Recados
     @app.route('/recados')
     @login_requerido
     def listar_recados():
@@ -871,50 +928,12 @@ def configure_routes(app):
         return render_template('ofertas/pix.html', chave_pix=chave_pix, qr_code_url=qr_code_url, usuario_logado=usuario)
 
 
+
     ## Prensença Membro
-    @app.route('/eventos/toggle/<int:evento_id>', methods=['POST'])
-    @login_requerido
-    @admin_requerido
-    def toggle_evento(evento_id):
-        evento = Evento.query.get_or_404(evento_id)
-
-        evento.ativo = not evento.ativo
-
-        db.session.commit()
-        return redirect(url_for('listar_eventos'))
-
     @app.route('/checkin/scan')
     @login_requerido
     def checkin_scan():
         return render_template('eventos/checkin_scan.html')
-
-
-    # QRCode de evento
-    @app.route('/eventos/qrcode/<int:evento_id>')
-    @login_requerido
-    @admin_requerido
-    def gerar_qrcode_evento(evento_id):
-        evento = Evento.query.get_or_404(evento_id)
-
-        checkin_url = url_for('checkin_publico', evento_id=evento.id, _external=True)
-
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(checkin_url)
-        qr.make(fit=True)
-
-        img = qr.make_image(fill_color="black", back_color="white")
-
-        buffered = BytesIO()
-        img.save(buffered, format="PNG")
-        img_base64 = base64.b64encode(buffered.getvalue()).decode()
-
-        return render_template('eventos/qrcode.html', evento=evento, qrcode_image=img_base64)
-
 
     # Página pública de check-in via QRCode
     @app.route('/checkin/publico/<int:evento_id>', methods=['GET', 'POST'])
@@ -959,15 +978,6 @@ def configure_routes(app):
 
         return render_template('eventos/checkin_publico.html', evento=evento, membro=membro_logado)
     
-
-    @app.route('/eventos/presencas/<int:evento_id>')
-    @login_requerido
-    @admin_requerido
-    def listar_presencas(evento_id):
-        evento = Evento.query.get_or_404(evento_id)
-        presencas = Presenca.query.filter_by(evento_id=evento.id).all()
-        
-        return render_template('eventos/listar_presencas.html', evento=evento, presencas=presencas)
 
 
     # Captar Visitantes
